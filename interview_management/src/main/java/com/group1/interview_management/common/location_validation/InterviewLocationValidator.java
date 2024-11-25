@@ -32,6 +32,13 @@ public class InterviewLocationValidator implements ConstraintValidator<ValidInte
                          .addPropertyNode("meetingLink")
                          .addConstraintViolation();
                return false;
+          } else if (!isLocationEmpty(value.getInterview_location()) && !isMeetingLinkEmpty(value.getMeetingLink())) {
+               context.disableDefaultConstraintViolation();
+               error = messageSource.getMessage("ME022.4", null, Locale.getDefault());
+               context.buildConstraintViolationWithTemplate(error)
+                         .addPropertyNode("meetingLink")
+                         .addConstraintViolation();
+               return false;
           }
           return true;
      }

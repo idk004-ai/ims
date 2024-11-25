@@ -9,6 +9,7 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -33,6 +34,29 @@ import lombok.RequiredArgsConstructor;
 public class BeanConfig {
 
      private final UserDetailsService userDetailsService; // lấy thông tin user sau khi đăng nhập
+     @Value("${spring.graphql.cors.allowed-origins}")
+     private String[] allowedOrigins;
+     @Value("${spring.graphql.cors.allowed-methods}")
+     private String[] allowedMethods;
+     @Value("${spring.graphql.cors.allowed-origin-patterns}")
+     private String allowedOriginPatterns;
+
+     @Value("${spring.mail.host}")
+     private String mailHost;
+     @Value("${spring.mail.port}")
+     private Integer mailPort;
+     @Value("${spring.mail.username}")
+     private String mailUsername;
+     @Value("${spring.mail.password}")
+     private String mailPassword;
+     @Value("${spring.mail.protocol}")
+     private String mailProtocol;
+     @Value("${spring.mail.properties.mail.smtp.auth}")
+     private String mailAuth;
+     @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
+     private String mailStartTlsEnable;
+     @Value("${spring.mail.debug}")
+     private String mailDebug;
 
      @Bean
      public AuthenticationProvider authenticationProvider() {
@@ -80,20 +104,14 @@ public class BeanConfig {
           final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
           final CorsConfiguration config = new CorsConfiguration();
           config.setAllowCredentials(true);
-          config.setAllowedOrigins(Collections.singletonList("https://jobnet.click"));
+          config.setAllowedOrigins(Arrays.asList(allowedOrigins));
           config.setAllowedHeaders(Arrays.asList(
                     HttpHeaders.ORIGIN,
                     HttpHeaders.CONTENT_TYPE,
                     HttpHeaders.ACCEPT,
                     HttpHeaders.AUTHORIZATION));
-          config.setAllowedMethods(Arrays.asList(
-                    "GET",
-                    "POST",
-                    "DELETE",
-                    "PUT",
-                    "PATCH",
-                    "OPTIONS"));
-          source.registerCorsConfiguration("/**", config);
+          config.setAllowedMethods(Arrays.asList(allowedMethods));
+          source.registerCorsConfiguration(allowedOriginPatterns, config);
           return new CorsFilter(source);
 
      }
@@ -101,17 +119,17 @@ public class BeanConfig {
      @Bean
      public JavaMailSender getJavaMailSender() {
           JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-          mailSender.setHost("smtp.gmail.com");
-          mailSender.setPort(587);
+          mailSender.setHost(mailHost);
+          mailSender.setPort(mailPort);
 
-          mailSender.setUsername("minhkhoilenhat04@gmail.com");
-          mailSender.setPassword("msfi tdvq dyru czdg");
+          mailSender.setUsername(mailUsername);
+          mailSender.setPassword(mailPassword);
 
           Properties props = mailSender.getJavaMailProperties();
-          props.put("mail.transport.protocol", "smtp");
-          props.put("mail.smtp.auth", "true");
-          props.put("mail.smtp.starttls.enable", "true");
-          props.put("mail.debug", "true");
+          props.put("mail.transport.protocol", mailProtocol);
+          props.put("mail.smtp.auth", mailAuth);
+          props.put("mail.smtp.starttls.enable", mailStartTlsEnable);
+          props.put("mail.debug", mailDebug);
 
           return mailSender;
      }

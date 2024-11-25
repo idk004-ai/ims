@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -73,6 +74,8 @@ public class InterviewServiceImpl implements InterviewService {
      private final EmailService emailService;
      private final ScheduleValidationService scheduleValidationService;
      private final InterviewResultProcess resultProcessor;
+     @Value("${app.domain}")
+     private String[] domain;
 
      private void validateUser(Authentication authenticatedUser) {
           User user = (User) authenticatedUser.getPrincipal();
@@ -436,7 +439,7 @@ public class InterviewServiceImpl implements InterviewService {
                props.put("scheduleDate", schedule);
                props.put("startTime", startTime);
                props.put("endTime", endTime);
-               props.put("interviewURL", "https://jobnet.click/api/v1/interview/view/" + id);
+               props.put("interviewURL", domain[0] + "/api/v1/interview/view/" + id);
                props.put("jobTitle", interview.getJob().getTitle());
                props.put("location", interview.getLocation());
                props.put("meetingLink", interview.getMeetingId());

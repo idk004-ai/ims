@@ -15,6 +15,16 @@
         {
             "name": "jwt.refresh-token.path",
             "type": "java.lang.String"
+        },
+        {
+            "name": "spring.mail.debug",
+            "type": "java.lang.String",
+            "description": "A description for 'spring.mail.debug'"
+        },
+        {
+            "name": "app.domain",
+            "type": "java.util.List<java.lang.String>",
+            "description": "A description for 'app.domain'"
         }
     ]
 }

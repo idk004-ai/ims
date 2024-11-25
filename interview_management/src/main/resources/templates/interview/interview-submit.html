@@ -10,10 +10,12 @@
      <link rel="stylesheet" type="text/css" th:href="@{/static/interview/css/interview_info.css}" />
      <link rel="stylesheet" type="text/css" th:href="@{/static/interview/css/interview_list.css}" />
      <link rel="stylesheet" type="text/css" th:href="@{/static/assets/css/drop_list_multi_choice.css}" />
+     <link rel="stylesheet" type="text/css" th:href="@{/static/common/css/modal_success.css}" />
      <!-- Main JS -->
      <script th:src="@{/static/common/js/main.js}"></script>
      <script th:src="@{/static/common/js/drop_list_multi_choice.js}"></script>
      <script th:src="@{/static/common/js/display_errors.js}"></script>
+     <script th:src="@{/static/interview/js/common_interview.js}"></script>
 </head>
 
 <body class="app sidebar-mini rtl">
@@ -142,14 +144,29 @@
                          Cancel
                     </button>
                </div>
-               <p id="error" class="text-danger" style="text-align: center; display: none;">Submit Result
-                    Unsuccessfully
-               </p>
-               <p id="success" class="text-success" style="text-align: center; display: none;">Submit Result
-                    Successfully
-               </p>
 
                <!-- </form> -->
+               <div id="submitResultModalSuccess" class="modal-overlay">
+                    <div class="modal-content">
+                         <h4>Interview created successfully</h4>
+                         <div class="modal-buttons">
+                              <button class="btn btn-success" onclick="redirectToMain()">
+                                   OK
+                              </button>
+                         </div>
+                    </div>
+               </div>
+
+               <div id="submitResultModalError" class="modal-overlay">
+                    <div class="modal-content">
+                         <h4>Interview created unsuccessfully</h4>
+                         <div class="modal-buttons">
+                              <button class="btn btn-danger" onclick="closeModal('submitResultModalError')">
+                                   OK
+                              </button>
+                         </div>
+                    </div>
+               </div>
      </main>
      <script>
           new Drop_list_multi_choice("interviewer_select");
@@ -165,14 +182,18 @@
                     interview_result: interviewResult,
                     note: note
                }
+               const successModal = document.getElementById('submitResultModalSuccess');
+               const errorModal = document.getElementById('submitResultModalError');
                initApi().then(api => {
                     api.post(`/interview/submit/${id}`, payload)
                          .then(data => {
-                              alert("Interview result submit successfully");
-                              window.location.href = `/api/v1/interview`;
+                              if (data) {
+                                   successModal.style.display = 'block';
+                                   clearErrors();
+                              }
                          })
                          .catch(err => {
-                              console.log(err);
+                              errorModal.style.display = 'block';
                               displayErrors(err.responseJSON);
                          });
                })
