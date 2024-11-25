@@ -24,7 +24,14 @@ $(document).ready(function () {
                 password: password
             }).then((response) => {
                 if (response.success) {
-                    window.location.href = response.redirectUrl || '/api/v1/home';
+                    // Nếu có token trong response (API request)
+                    if (response.token) {
+                        // Xử lý token nếu cần
+                        window.location.href = '/api/v1/home';
+                    } else {
+                        // Browser request - sử dụng redirectUrl
+                        window.location.href = response.redirectUrl;
+                    }
                 } else {
                     $('#loginError').text('Login failed').show();
                 }

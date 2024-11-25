@@ -73,6 +73,8 @@ public class AuthenticationController {
     private Integer jwtExpiration;
     @Value("${jwt.refresh-token.expiration}")
     private Integer refreshExpiration;
+    @Value("${app.domain}")
+    private String[] domains;
 
     @GetMapping("/login")
     public String showLoginPage(HttpServletRequest request, Model model) {
@@ -106,9 +108,22 @@ public class AuthenticationController {
             // Set JWT token in cookie
             jwtService.setTokenInsideCookie(response, jwtToken);
 
+            // Kiểm tra nếu request là từ API client (Postman)
+            String acceptHeader = request.getHeader("Accept");
+            boolean isApiRequest = acceptHeader != null && acceptHeader.contains("application/json");
+
+            if (isApiRequest) {
+                // Nếu là API request, trả về token và không redirect
+                return ResponseEntity.ok(Map.of(
+                        "success", true,
+                        "token", jwtToken,
+                        "redirectUrl", "/api/v1/home" // Luôn trả về home cho API requests
+                ));
+            }
+
             // Check for saved request
             SavedRequest savedRequest = requestCache.getRequest(request, response);
-            String redirectUrl = "/api/v1/home"; // default redirect
+            String redirectUrl = domains[0] + "/api/v1/home"; // default redirect
 
             if (savedRequest != null) {
                 redirectUrl = savedRequest.getRedirectUrl();
