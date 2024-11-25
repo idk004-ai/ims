@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Edit User</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/common/css/main.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/static/user/css/edit_user.css}" />
+</head>
+
+<body class="app sidebar-mini rtl">
+    <div th:replace="fragments/header :: header"></div>
+    <div th:replace="fragments/menu :: menu"></div>
+    <main class="app-content">
+        <div class="container-fluid">
+            <h2 class="my-4">Edit User</h2>
+            <div class="app-title">
+                <ul class="app-breadcrumb breadcrumb side">
+                    <li class="breadcrumb-item"><a href="#" style="color: black; font-size: 1.2em;">User List</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" style="color: black; font-size: 1.2em;"><span>Edit User</span></li>
+                </ul>
+            </div>
+
+            <form id="userForm">
+                <input type="hidden" id="userId" th:value="${UserDTO.id}" />
+                <!-- Row for Full Name and Email fields -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Full Name</b></label>
+                        <input type="text" class="form-control" name="fullname" 
+                            placeholder="Type a name.." 
+                            th:value="${UserDTO.fullname}" required/>
+                        <div class="text-danger" id="fullnameError" style="display:none;"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Email</b></label>
+                        <input type="email" class="form-control" name="email" id="email" 
+                                placeholder="Type an email.." 
+                                th:data-original-email="${UserDTO.email}"
+                                th:value="${UserDTO.email}" />
+                        <div id="emailError" class="text-danger" style="display:none;"></div> <!-- Error message for email -->
+                        <input type="hidden" id="originalEmail" th:value="${UserDTO.email}" />
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>D.O.B</b></label>
+                        <input type="date" class="form-control" name="dob" id="dob"
+                           th:value="${UserDTO.dob}" />
+                        <div id="dobError" class="text-danger" style="display:none;"></div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Phone Number</b></label>
+                        <input type="text" class="form-control" name="phoneNo" id="phoneNo" 
+                            placeholder="Type a number.." 
+                            th:data-original-phoneno="${UserDTO.phoneNo}"
+                            th:value="${UserDTO.phoneNo}" />
+                            
+                        <div id="phoneNoError" class="text-danger" style="display:none;"></div> <!-- Error message for phone number -->
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Role</b></label>
+                            <select class="form-select" name="role" required>
+                                <option value="">Select Role</option>
+                                <option th:each="role : ${roles}" 
+                                        th:value="${role.categoryId}" 
+                                        th:text="${role.categoryValue}" 
+                                        th:selected="${role.categoryValue == UserDTO.role}"></option>
+                            </select>
+                            <div class="text-danger" id="roleError" style="display:none;"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Status</b></label>
+                        <select class="form-select" name="status" required>
+                            <option value="">Select Status</option>
+                            <option th:each="status : ${statuses}" 
+                                    th:value="${status.categoryId}" 
+                                    th:text="${status.categoryValue}" 
+                                    th:selected="${status.categoryValue == UserDTO.status}"></option>
+                        </select>
+                        <div class="text-danger" id="statusError" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Address</b></label>
+                        <input type="text" class="form-control" name="address" 
+                                                placeholder="Type an address.." 
+                                                th:value="${UserDTO.address}" required/>
+                        <div class="text-danger" id="addressError" style="display:none;"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Gender</b></label>
+                        <select class="form-select" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option th:each="gender : ${genders}" 
+                                    th:value="${gender.categoryId}" 
+                                    th:text="${gender.categoryValue}" 
+                                    th:selected="${gender.categoryValue == UserDTO.gender}"></option>
+                        </select>
+                        <div class="text-danger" id="genderError" style="display:none;"></div>                                            
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Department</b></label>
+                        <select class="form-select" name="department" required>
+                            <option value="">Select Department</option>
+                            <option th:each="department : ${departments}" 
+                                    th:value="${department.categoryId}" 
+                                    th:text="${department.categoryValue}" 
+                                    th:selected="${department.categoryValue == UserDTO.department}"></option>
+                        </select>
+                        <div class="text-danger" id="departmentError" style="display:none;"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Note</b></label>
+                        <input type="text" class="form-control" name="note" 
+                        th:value="${UserDTO.note}" />
+                    </div>
+                </div>
+
+                <div id="message" style="display:none;font-size: larger;"></div>
+                <!-- Centered Submit and Cancel buttons -->
+                <div class="row justify-content-center mt-5">
+                    <div class="col-md-6 text-center">                
+                        <button type="button" class="btn btn-primary btn-lg me-4" id="submitBtn">Submit</button>
+                        <button type="button" class="btn btn-secondary btn-lg" th:onclick="'window.location.href=\'/api/v1/user/user_detail/' + ${UserDTO.id} + '\''">Cancel</button>
+                    </div>
+                </div>
+            </form>
+            <div id="confirmationPopup" class="popup-overlay">
+                <div class="popup-content">
+                    <h4>Do you want to edit this user ?</h4>
+                    <div class="popup-buttons">
+                        <button id="confirmYes" class="btn btn-primary">Yes</button>
+                        <button id="confirmNo" class="btn btn-secondary">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/static/user/js/edit_user.js}"></script>      
+</body>
+</html>

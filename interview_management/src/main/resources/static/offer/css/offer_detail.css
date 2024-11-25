@@ -1,0 +1,302 @@
+.user-avatar {
+    border-radius: 50%;
+    /* Makes the avatar circular */
+}
+
+.profile-dropdown {
+    display: none;
+    /* Initially hides the dropdown */
+    position: absolute;
+    /* Positions the dropdown relative to its nearest positioned ancestor */
+    right: 0;
+    /* Aligns the dropdown to the right */
+    top: 55px;
+    /* Positions the dropdown below the avatar */
+    background-color: white;
+    /* Sets the background color to white */
+    border: 1px solid #ddd;
+    /* Adds a light gray border */
+    border-radius: 4px;
+    /* Rounds the corners of the dropdown */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    /* Adds a subtle shadow */
+    min-width: 150px;
+    /* Sets a minimum width for the dropdown */
+}
+
+.profile-dropdown .dropdown-item {
+    padding: 10px;
+    /* Adds padding inside dropdown items */
+    cursor: pointer;
+    /* Changes cursor to pointer on hover */
+    text-decoration: none;
+    /* Removes underline from links */
+    color: #333;
+    /* Sets text color to dark gray */
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px; /* Thêm khoảng cách giữa các hàng */
+    gap: 10px;
+}
+
+.date-range {
+    flex: 3; /* Chiếm 2 phần không gian */
+    color: #333; /* Màu chữ tối hơn cho giá trị */
+    text-align: left; /* Căn phải cho giá trị */
+}
+
+.profile-dropdown .dropdown-item:hover {
+    background-color: #f1f1f1;
+    /* Changes background color on hover */
+}
+
+.dropdown:hover .profile-dropdown {
+    display: block;
+    /* Shows the dropdown when hovering over the parent */
+}
+
+/* Center align all cells in the action column */
+.action-column {
+    text-align: center;
+    /* Center aligns text and icons */
+}
+
+.page-link {
+    color: black;
+    /* Sets the text color of page links to black */
+}
+
+.no-underline {
+    text-decoration: none !important;
+    /* Removes underline, overriding other styles if necessary */
+}
+
+.app-title {
+    background-color: lightgrey;
+    /* Sets a light gray background */
+    display: flex;
+    /* Enables flexbox for layout */
+    justify-content: space-between;
+    /* Spaces out child elements */
+    align-items: center;
+    /* Vertically centers child elements */
+    margin-bottom: 20px;
+    /* Adds space below the title */
+}
+
+.breadcrumb {
+    background: none;
+    /* Removes background for breadcrumb */
+    padding: 0;
+    /* Removes padding */
+}
+
+.breadcrumb-item a {
+    color: black;
+    /* Sets link color in breadcrumb to black */
+    text-decoration: none;
+    /* Removes underline from breadcrumb links */
+    font-size: 1.1em;
+    /* Increases font size */
+    font-weight: 600;
+    /* Makes the text bold */
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+    /* Adds underline on hover */
+}
+
+.btn-custom {
+    background-color: #007bff;
+    /* Sets background color for custom button */
+    color: white;
+    /* Sets text color to white */
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
+    /* Changes background on hover */
+}
+
+.btn-custom-add {
+    background-color: #28a745;
+    /* Sets background color for 'Add Candidate' button */
+    color: white;
+    /* Sets text color to white */
+}
+
+.btn-custom-add:hover {
+    background-color: #218838;
+    /* Changes background on hover */
+}
+
+body {
+    background-color: antiquewhite;
+    /* Sets a soft background color for the body */
+    font-family: 'Arial', sans-serif;
+    /* Sets the font family */
+}
+
+.view-container {
+    margin: 50px auto;
+    /* Centers the container with top/bottom margin */
+    padding: 30px;
+    /* Adds padding inside the container */
+    background-color: lightgrey;
+    /* Sets a light gray background */
+    border-radius: 12px;
+    /* Rounds the corners of the container */
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
+    /* Adds a shadow for depth */
+}
+
+h5 {
+    font-weight: 600;   /* Makes the header text bold */
+    color: #333;    /* Sets text color to dark gray */
+    margin-bottom: 15px;    /* Adds space below the header */
+    padding-bottom: 8px;    /* Adds padding below the header */
+}
+
+
+.label {
+    flex: 1; /* Chiếm 1 phần không gian */
+    font-weight: bold; /* Làm cho chữ đậm */
+    color: #555; /* Màu chữ nhạt hơn một chút */
+    text-align: left; /* Căn trái cho nhãn */
+}
+
+.value {
+    flex: 3; /* Chiếm 2 phần không gian */
+    color: #333; /* Màu chữ tối hơn cho giá trị */
+    text-align: left; /* Căn phải cho giá trị */
+}
+
+.custom-textarea {
+    background-color: #f8f9fa;  /* Sets a light gray background for text area */
+    color: #333;    /* Sets text color to dark gray */
+    border: 1px solid #ced4da;
+    /* Adds a border */
+}
+
+.custom-textarea:focus {
+    background-color: #fff;
+    /* Sets background to white when focused */
+    border-color: #80bdff;
+    /* Changes border color on focus */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    /* Adds shadow effect on focus */
+}
+
+.info-row {
+    margin-bottom: 15px;
+    /* Adds space below info rows */
+}
+
+.buttons {
+    display: flex;
+    /* Enables flexbox for buttons */
+    justify-content: center;
+    /* Centers the buttons */
+    margin-top: 30px;
+    /* Adds space above buttons */
+}
+
+.btn {
+    padding: 10px 20px;
+    /* Adds padding to buttons */
+    font-size: 16px;
+    /* Sets button text size */
+    border-radius: 8px;
+    /* Rounds the corners of buttons */
+    margin: 0 10px;
+    /* Adds horizontal margin */
+    transition: background-color 0.3s, transform 0.1s;
+    /* Smooth transition for background and transform effects */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    /* Changes background on hover for primary button */
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+    /* Slightly scales down button when active */
+}
+
+.buttons button {
+    margin-left: 10px;
+    /* Adds left margin to buttons */
+}
+
+.btn-success {
+    background-color: #28a745;
+    /* Sets background color for success button */
+    border-color: #28a745;
+    /* Matches border color with background */
+    color: #fff;
+    /* Sets text color to white */
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    /* Sets background color for danger button */
+    border-color: #dc3545;
+    /* Matches border color with background */
+    color: #fff;
+    /* Sets text color to white */
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    /* Sets background color for warning button */
+    border-color: #ffc107;
+    /* Matches border color with background */
+    color: #212529;
+    /* Sets text color to dark gray */
+}
+
+.btn-light-blue {
+    background-color: #add8e6;
+    /* Sets background color to light blue */
+    color: #fff;
+    /* Sets text color to white */
+    border: none;
+    /* Removes border */
+}
+
+.btn-light-blue:hover {
+    background-color: #87ceeb;
+    /* Changes background to slightly darker blue on hover */
+}
+
+.btn-light-pink {
+    background-color: #ffb6c1;
+    /* Light pink color */
+    color: #fff;
+    /* White text color */
+    border: none;
+    /* Remove border */
+}
+
+.btn-light-pink:hover {
+    background-color: #ff9aae;
+    /* Slightly darker pink for hover effect */
+}
+
+#cancelConfirmationModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}

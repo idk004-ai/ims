@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="file" id="fileInput" accept=".xlsx" />
+<button onclick="uploadExcelFile()">Upload Excel File</button>
+
+<script>
+    const uploadExcelFile = () => {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("/api/v1/upload-excel", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => response.text())
+            .then(result => {
+                console.log("Server response:", result);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+    };
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Common Page</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Main CSS-->
+    <link rel="stylesheet" type="text/css" th:href="@{/static/interview/css/interview_create.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/static/assets/css/drop_list_multi_choice.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/static/common/css/modal_success.css}" />
+    <!-- Main JS -->
+    <script th:src="@{/static/common/js/main.js}"></script>
+    <script th:src="@{/static/common/js/drop_list_multi_choice.js}"></script>
+    <script th:src="@{/static/interview/js/create_interview.js}"></script>
+    <script th:src="@{/static/interview/js/render_data.js}"></script>
+    <script th:src="@{/static/interview/js/common_interview.js}"></script>
+    <script th:src="@{/static/common/js/drop_down_menu.js}"></script>
+    <script th:src="@{/static/common/js/display_errors.js}"></script>
+</head>
+
+<body class="app sidebar-mini rtl">
+    <!-- Navbar-->
+    <div th:replace="fragments/header :: header"></div>
+    <!-- Sidebar menu-->
+    <div th:replace="fragments/menu :: menu"></div>
+    <main class="app-content">
+        <div>
+            <h2>Interview Schedule</h2>
+        </div>
+        <div class="app-title">
+            <ul class="app-breadcrumb breadcrumb side">
+                <li class="breadcrumb-item">
+                    <a th:href="@{/interview}">Interview Schedule List</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <a th:href="@{/interview/create}">New Interview Schedule</a>
+                </li>
+            </ul>
+        </div>
+        <!-- <form> -->
+        <div class="form-container">
+            <div class="row">
+
+                <!-- Schedule title -->
+                <div class="col-md-6 form-group">
+                    <label for="interview_title" class="form-label">Schedule title
+                        <span class="text-danger">*</span></label>
+                    <input type="text" id="interview_title" class="form-control" placeholder="Type a title..." />
+                    <p class="error text-danger"></p>
+                </div>
+
+                <!-- Select Job -->
+                <div class="col-md-6 form-group">
+                    <label for="interview_job" class="form-label">Job
+                        <span class="text-danger">*</span></label>
+                    <select id="interview_job" class="form-select">
+                        <option value="0" disabled selected>Select a job</option>
+                        <th:block th:each="j : ${job_list}">
+                            <option th:value="${j.jobId}" th:text="${j.title}">
+                        </th:block>
+                        <!-- render list of job here -->
+                    </select>
+                    <p class="error text-danger"></p>
+                </div>
+
+                <!-- Select Candidate -->
+                <div class="col-md-6 form-group">
+                    <label for="interview_candidate" class="form-label">Candidate
+                        <span class="text-danger">*</span></label>
+                    <select id="interview_candidate" class="form-select">
+                        <option value="0" disabled selected>Select candidate name</option>
+                        <th:block th:each="c : ${candidate_list}">
+                            <option th:value="${c.id}" th:text="${c.fullName + '(' + c.status + ')'}"
+                                th:disabled="${c.status == 'Failed Interview' || c.status == 'Passed Interview'}">
+                        </th:block>
+                        <!-- render list of candidate here -->
+                    </select>
+                    <p class="error text-danger"></p>
+                </div>
+
+                <!-- Select Interviewers -->
+                <div class="col-md-6 form-group">
+                    <label for="interviewer_select" class="form-label">Interviewer <span
+                            class="text-danger">*</span></label>
+                    <select name="interviewer_select" id="interviewer_select" onchange="removeError()" multiple>
+                        <tr th:each="interviewer : ${interviewers}">
+                            <option th:value="${interviewer.id}" th:text="${interviewer.fullname}"></option>
+                        </tr>
+                    </select>
+                    <input type="hidden" id="interviewer_tag">
+                    <p class="error text-danger"></p>
+                </div>
+
+                <!-- Schedule Time -->
+                <div class="col-md-6 form-group">
+                    <label for="interview_schedule" class="form-label">Schedule Time <span
+                            class="text-danger">*</span></label>
+                    <input type="date" id="interview_schedule" name="schedule" class="form-control">
+                    <p class="error text-danger"></p>
+                </div>
+
+                <!-- Location -->
+                <div class="col-md-6 form-group">
+                    <label for="interview_location" class="form-label">Location</label>
+                    <input type="text" id="interview_location" class="form-control" placeholder="Type a location..." />
+                    <p class="error text-danger"></p>
+                </div>
+
+                <!-- Start Time and End Time -->
+                <div class="col-md-6 form-group" style="margin-top: 2rem;">
+                    <div class="d-flex justify-content-around">
+                        <label for="startTime" class="form-label">Start Time <span class="text-danger">*</label>
+                        <div>
+                            <input type="time" id="startTime" name="startTime" class="form-control">
+                            <p class="error text-danger"></p>
+                        </div>
+                        <label for="endTime" class="form-label">End Time <span class="text-danger">*</label>
+                        <div>
+                            <input type="time" id="endTime" name="endTime" class="form-control">
+                            <p class="error text-danger"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recruiter -->
+                <div class="col-md-6 form-group">
+                    <label for="interview_recruiter" class="form-label">Recruiter
+                        <span class="text-danger">*</span></label>
+                    <select id="interview_recruiter" class="form-select">
+                        <option value="0" selected>Select recruiter name</option>
+                        <th:block th:each="r : ${recruiter_list}">
+                            <option th:value="${r.id}" th:text="${r.fullname}">
+                        </th:block>
+                        <!-- render list of recruiter here -->
+                    </select>
+                    <button type="button" id="assignMeBtn" class="btn btn-link mt-2 p-0" onclick="assignMe()">Assign
+                        Me</button>
+                    <p class="error text-danger"></p>
+                </div>
+
+                <!-- Notes -->
+                <div class="col-md-6 form-group">
+                    <label for="note" class="form-label">Notes</label>
+                    <textarea type="text" id="note" class="form-control"
+                        placeholder="Type schedule notes..."></textarea>
+                    <p class="error text-danger"></p>
+                </div>
+
+                <!-- Meeting Link -->
+                <div class="col-md-6 form-group">
+                    <label for="meetingLink" class="form-label">Meeting Link</label>
+                    <input type="url" id="meetingLink" name="meetingLink" class="form-control"
+                        placeholder="https://example.com/meeting">
+                    <button class="btn btn-outline-secondary" type="button" id="copyLinkBtn">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <p class="error text-danger"></p>
+                </div>
+
+
+                <div class="d-flex justify-content-center mt-4">
+                    <button onclick="submitForm()" class="btn btn-primary me-2">
+                        Submit
+                    </button>
+                    <button type="button" onclick="goPrev()" class="btn btn-secondary">
+                        Cancel
+                    </button>
+                </div>
+                <p id="error" class="text-danger" style="text-align: center; display: none;">Save Interview
+                    Unsuccessfully
+                </p>
+                <p id="success" class="text-success" style="text-align: center; display: none;">Save Interview
+                    Successfully
+                </p>
+            </div>
+            <!-- </form> -->
+            <div id="createInterviewModalSuccess" class="modal-overlay">
+                <div class="modal-content">
+                    <h4>Interview created successfully</h4>
+                    <div class="modal-buttons">
+                        <button class="btn btn-success" onclick="redirectToMain()">
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="createInterviewModalError" class="modal-overlay">
+                <div class="modal-content">
+                    <h4>Interview created unsuccessfully</h4>
+                    <div class="modal-buttons">
+                        <button class="btn btn-danger" onclick="closeModal('createInterviewModalError')">
+                            OK
+                        </button>
+                    </div>
+                </div>
+            </div>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+</body>
+
+</html>

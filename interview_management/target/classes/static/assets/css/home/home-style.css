@@ -1,0 +1,93 @@
+body {
+     margin: 0;
+     padding: 0;
+     font-family: Arial, sans-serif;
+}
+
+.sidebar {
+     position: fixed;
+     left: 0;
+     top: 0;
+     width: 60px;
+     height: 100vh;
+     background-color: #dedddb87;
+     overflow-x: hidden;
+     transition: 0.3s;
+}
+
+.no-underline {
+     text-decoration: none !important; /* Ghi đè bằng !important nếu cần thiết */
+ }
+
+.sidebar ul {
+     list-style-type: none;
+     padding: 0;
+     margin: 0;
+}
+
+.sidebar li {
+     text-align: center;
+     padding: 1rem 0;
+}
+
+.sidebar a {
+     display: block;
+     color: white;
+     padding: 16px;
+     text-decoration: none;
+     transition: 0.3s;
+}
+
+.sidebar a:hover {
+     background-color: #555;
+}
+
+.sidebar i {
+     font-size: 24px;
+     transition: 0.3s;
+     -webkit-text-stroke: 2px black;
+}
+
+.sidebar a:hover i {
+     color: #0ca252;
+}
+
+.content {
+     margin-left: 60px;
+     padding: 20px;
+}
+
+.header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 20px;
+}
+
+.user-info {
+     display: flex;
+     align-items: center;
+     gap: 20px;
+}
+
+.user-details {
+     text-align: right;
+}
+
+.user-icon {
+     font-size: 24px;
+}
+
+.login-logout {
+     margin-left: 20px;
+}
+
+.login-logout a {
+     text-decoration: none;
+     color: #000000;
+     font-weight: bold;
+}
+
+.login-logout a:hover{
+     text-decoration: underline;
+}

@@ -1,0 +1,128 @@
+body {
+    background-color: #f8f9fa;
+    font-family: Arial, sans-serif;
+}
+.app-content {
+    padding: 20px;
+    margin-top: 20px; /* Spacing for the top button */
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1.5rem;
+}
+.app-title {
+    background-color: #9b9b9b68;
+}
+.breadcrumb {
+    border-radius: 5px;
+}
+.breadcrumb-item span {
+    color: black;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+.user-details-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+.form-label {
+    font-weight: 500;
+    color: #7d6c6c;
+    margin-bottom: 0.2rem;
+}
+.info-group {
+    margin-bottom: 15px;
+}
+.info-label {
+    font-weight: bold;
+    color: #495057;
+}
+.info-value {
+    font-size: 1.05rem;
+    color: #333;
+}
+.btn-success {
+    background-color: #28a745;
+    border: none;
+    padding: 8px 20px;
+    margin-bottom: 20px; /* Adjust spacing under the button */
+}
+.btn-primary, .btn-secondary {
+    font-size: 1rem;
+    padding: 10px 20px;
+    border-radius: 5px;
+}
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+.btn-secondary {
+    background-color: #6c757d;
+    border: none;
+}
+.btn-custom {
+    background-color: #9d9d9d; /* Màu nền cho nút */
+    color: white; /* Màu chữ */
+}
+
+.btn-custom:hover {
+    background-color: #9dc1d3; /* Màu nền khi di chuột */
+}
+
+.btn-custom-add {
+    background-color: #9d9d9d; /* Màu nền cho nút Add Candidate */
+    color: white; /* Màu chữ */
+}
+
+.btn-custom-add:hover {
+    background-color: #9dc1d3; /* Màu nền khi di chuột */
+}
+.centered-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 30px;
+}
+.user-info-fields {
+    background-color: #e9f2fa;
+    padding: 20px;
+    border-radius: 10px;
+}
+.no-underline {
+    text-decoration: none !important; /* Ghi đè bằng !important nếu cần thiết */
+}
+
+.pagination .page-item .page-link {
+    color: #fff;
+    background-color: #9d9d9d;
+    border-color: #9dc1d3 ;
+    border-radius: 8px;
+    margin: 0 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: black; /* Màu xanh lá cho nút đang chọn */
+    border-color: black;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: #2a383e;
+    border-color: #2a383e;
+    transform: scale(1.1);
+}
+
+.pagination {
+    margin-top: 30px;
+}
+
+.pagination .page-item:first-child .page-link,
+.pagination .page-item:last-child .page-link {
+    border-radius: 50%; /* Làm tròn nút Previous và Next */
+}

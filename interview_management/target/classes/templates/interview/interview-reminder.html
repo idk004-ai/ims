@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Schedule Reminder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .reminder {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .details-row {
+            margin: 10px 0;
+        }
+
+        .highlight {
+            color: #0066cc;
+            font-weight: bold;
+        }
+
+        p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #0066cc;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        #direction-button {
+            color: #fff !important;
+            text-decoration: none;
+        }
+
+        .button:hover,
+        .button:visited,
+        .button:active {
+            background-color: #003acc;
+            transition: 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Interview Schedule Reminder</h2>
+        <p class="reminder">
+            Dear <span th:text="${interviewerName}"></span>,
+        </p>
+        <p th:if="${daysUntilInterview != null && daysUntilInterview != ''}">
+            This is a reminder that you have an upcoming interview scheduled in
+            <span class="highlight" th:text="${daysUntilInterview}">
+                days.
+        </p>
+
+
+        <div class="details">
+            <div class="details-row">
+                <strong>Candidate:</strong>
+                <span th:text="${candidateName}"></span>
+            </div>
+            <div class="details-row">
+                <strong>Position:</strong>
+                <span th:text="${jobTitle}"></span>
+            </div>
+            <div class="details-row">
+                <strong>Date:</strong>
+                <span th:text="${scheduleDate}"></span>
+            </div>
+            <div class="details-row">
+                <strong>Time:</strong>
+                <span th:text="${startTime}"></span> -
+                <span th:text="${endTime}"></span>
+            </div>
+            <div class="details-row">
+                <strong>Location:</strong>
+                <span th:text="${location}"></span>
+            </div>
+            <div class="details-row" th:if="${meetingLink != null}">
+                <strong>Meeting Link:</strong>
+                <a th:href="${meetingLink}" th:text="${meetingLink}"></a>
+            </div>
+        </div>
+
+        <p>
+            For more details about this interview, please click the button
+            below:
+        </p>
+        <a class="button" id="direction-button" th:href="${interviewURL}">View Interview Details</a>
+
+        <div class="footer">
+            <p>
+                Thanks & Regards,<br />
+                IMS Team
+            </p>
+            <p>
+                <small>This is an automated message, please do not reply to
+                    this email.</small>
+            </p>
+        </div>
+    </div>
+</body>
+
+</html>

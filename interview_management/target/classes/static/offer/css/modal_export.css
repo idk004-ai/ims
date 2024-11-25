@@ -1,0 +1,73 @@
+/* Overlay for the modal */
+.modal-overlay {
+    display: none; /* Hidden by default, will be shown with JavaScript */
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1050;
+    overflow: auto; /* Enable scroll if needed */
+    padding-top: 20em;
+}
+
+/* Content of the modal */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+}
+
+/* Button styles */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 5px; /* Thay đổi margin để không có khoảng cách trên/dưới */
+}
+.modal-buttons {
+    display: flex; /* Sử dụng Flexbox để căn chỉnh các nút */
+    justify-content: center; /* Căn giữa các nút */
+    margin-top: 20px; /* Khoảng cách giữa nội dung và các nút */
+}
+/* Specific button styles */
+.btn-submit {
+    background-color: #9d9d9d;
+    color: white;
+}
+
+.btn-submit:hover {
+    background-color: #9dc1d3; /* Darker shade on hover */
+}
+
+.btn-cancel {
+    background-color: #9d9d9d;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #9dc1d3; /* Darker shade on hover */
+}
+
+.date-range {
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+
+.calendar-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+

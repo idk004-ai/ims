@@ -1,0 +1,188 @@
+.user-avatar {
+    border-radius: 50%;
+}
+
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 55px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
+}
+
+.profile-dropdown .dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+}
+
+.profile-dropdown .dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+
+.dropdown:hover .profile-dropdown {
+    display: block;
+}
+
+/* Center align all cells in the action column */
+.action-column {
+    text-align: center;
+    /* Center align text and icons */
+}
+
+.page-link {
+    color: black;
+}
+
+.no-underline {
+    text-decoration: none !important;
+    /* Ghi đè bằng !important nếu cần thiết */
+}
+
+.app-title {
+    background-color: lightgrey;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    /* Thêm khoảng cách dưới tiêu đề */
+}
+
+.breadcrumb {
+    background: none;
+    /* Xóa nền cho breadcrumb */
+    padding: 0;
+    /* Xóa padding */
+}
+
+.breadcrumb-item a {
+    color: black;
+    /* Màu chữ */
+    text-decoration: none;
+    /* Xóa gạch dưới */
+    font-size: 1.1em;
+    /* Kích thước chữ lớn hơn */
+    font-weight: 600;
+    /* Đậm chữ */
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+    /* Hiệu ứng gạch dưới khi di chuột */
+}
+
+.btn-custom {
+    background-color: #007bff;
+    /* Màu nền cho nút */
+    color: white;
+    /* Màu chữ */
+}
+
+.btn-custom:hover {
+    background-color: #0056b3;
+    /* Màu nền khi di chuột */
+}
+
+.btn-custom-add {
+    background-color: #28a745;
+    /* Màu nền cho nút Add Candidate */
+    color: white;
+    /* Màu chữ */
+}
+
+.btn-custom-add:hover {
+    background-color: #218838;
+    /* Màu nền khi di chuột */
+}
+
+body {
+    background-color: antiquewhite;
+    font-family: "Arial", sans-serif;
+}
+
+.view-container {
+    margin: 50px auto;
+    padding: 30px;
+    background-color: lightgrey;
+    border-radius: 12px;
+    box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+h5 {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+}
+
+.label {
+    flex: 0 0 7.5rem;
+    font-weight: 500;
+}
+
+.value {
+    flex: 1;
+}
+
+.custom-textarea {
+    background-color: #f8f9fa;
+    /* Màu nền (màu xám nhạt) */
+    color: #333;
+    /* Màu chữ */
+    border: 1px solid #ced4da;
+    /* Đường viền */
+}
+
+.custom-textarea:focus {
+    background-color: #fff;
+    /* Màu nền khi ô được chọn */
+    border-color: #80bdff;
+    /* Đường viền khi ô được chọn */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    /* Hiệu ứng bóng */
+}
+
+.info-row {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    margin: 0 10px;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.time-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.time-title {
+    padding-left: 3.125rem;
+}
+
+.time-indent {
+    padding-left: 7.5rem;
+}

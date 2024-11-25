@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add User</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/static/common/css/main.css}" />
+    <link rel="stylesheet" type="text/css" th:href="@{/static/user/css/create_user.css}" />
+</head>
+
+<body class="app sidebar-mini rtl">
+    <div id="confirmationPopup" class="popup-overlay">
+        <div class="popup-content">
+            <h4>Do you want to add this user?</h4>
+            <div class="popup-buttons">
+                <button id="confirmYes" class="btn btn-primary">Yes</button>
+                <button id="confirmNo" class="btn btn-secondary">No</button>
+            </div>
+        </div>
+    </div>
+    <div th:replace="fragments/header :: header"></div>
+    <div th:replace="fragments/menu :: menu"></div>
+    <main class="app-content">
+        <div class="container-fluid">
+            <h2 class="my-4">Add User</h2>
+            <div class="app-title">
+                <ul class="app-breadcrumb breadcrumb side">
+                    <li class="breadcrumb-item"><a href="#" style="color: black; font-size: 1.2em;">User List</a></li>
+                    <li class="breadcrumb-item active" aria-current="page" style="color: black; font-size: 1.2em;"><span>Add User</span></li>
+                </ul>
+            </div>
+
+            <form id="userForm">
+                <!-- Row for Full Name and Email fields -->
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Full Name</b></label>
+                        <input type="text" class="form-control" name="fullname" placeholder="Type a name.." required/>
+                        <div id="fullnameError" class="text-danger" style="display:none;"></div> <!-- Error message for full name -->
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Email</b></label>
+                        <input type="email" class="form-control" name="email" id="email" placeholder="Type an email.." required/>
+                        <div id="emailError" class="text-danger" style="display:none;"></div> <!-- Error message for email -->
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>D.O.B</b></label>
+                        <input type="date" class="form-control" name="dob" id="dob" required/>
+                        <div id="dobError" class="text-danger" style="display:none;"></div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Phone Number</b></label>
+                        <input type="text" class="form-control" name="phoneNo" id="phoneNo" placeholder="Type a number.."/>
+                        <div id="phoneNoError" class="text-danger" style="display:none;"></div> <!-- Error message for phoneNo number -->
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Role</b></label>
+                        <select class="form-select" name="role" required>
+                            <option value="">Select Role</option>
+                            <option th:each="role : ${roles}" th:value="${role.categoryId}" th:text="${role.categoryValue}"></option>
+                        </select>
+
+                        <div id="roleError" class="text-danger" style="display:none;"></div> <!-- Error message for role -->
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Status</b></label>
+                        <select class="form-select" name="status" required>
+                            <option value="">Select Status</option>
+                            <option th:each="status : ${statuses}" th:value="${status.categoryId}" th:text="${status.categoryValue}"></option>
+                        </select>
+
+                        <div id="statusError" class="text-danger" style="display:none;"></div> <!-- Error message for status -->
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Address</b></label>
+                        <input type="text" class="form-control" name="address" placeholder="Type an address.." required/>
+
+                        <div id="addressError" class="text-danger" style="display:none;"></div> <!-- Error message for address -->
+
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Gender</b></label>
+                        <select class="form-select" name="gender" required>
+                            <option value="">Select Gender</option>
+                            <option th:each="gender : ${genders}" th:value="${gender.categoryId}" th:text="${gender.categoryValue}"></option>
+                        </select>
+                        <div id="genderError" class="text-danger" style="display:none;"></div> <!-- Error message for gender -->
+                    </div>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Department</b></label>
+                        <select class="form-select" name="department" required>
+                            <option value="">Select Department</option>
+                            <option th:each="department : ${departments}" th:value="${department.categoryId}" th:text="${department.categoryValue}"></option>
+                        </select>
+                        <div id="departmentError" class="text-danger" style="display:none;"></div> <!-- Error message for department -->
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label"><b>Note</b></label>
+                        <input type="text" class="form-control" name="note"/>
+                    </div>
+                </div>
+
+                <div id="message" style="display:none;font-size: larger;"></div>
+                <!-- Centered Submit and Cancel buttons -->
+                <div class="row justify-content-center mt-5">
+                    <div class="col-md-6 text-center">                
+                        <button type="button" class="btn btn-primary btn-lg me-4" id="submitBtn">Submit</button>
+                        <button type="button" class="btn btn-secondary btn-lg" onclick="window.location.href='/api/v1/user/get-all-user'">Cancel</button>
+                    </div>
+                </div>
+            </form>
+           
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script th:src="@{/static/user/js/create_user.js}"></script>      
+</body>
+</html>

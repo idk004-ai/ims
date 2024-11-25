@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Edit Candidate</title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<body onload="time()" class="app sidebar-mini rtl">
+
+    <!-- Navbar-->
+    <div th:replace="fragments/header :: header"></div>
+
+    <!-- Sidebar menu-->
+    <div th:replace="fragments/menu :: menu"></div>
+
+    <!-- Main Content-->
+    <main class="app-content">
+
+        <!-- Title Page-->
+        <div>
+            <h2>Candidate</h2>
+        </div>
+        <div class="app-title">
+            <ul class="app-breadcrumb breadcrumb side">
+                <li class="breadcrumb-item">
+                    <a href="/api/v1/candidates/list_candidates">Candidate List</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                    <a th:href="@{/api/v1/candidates/update_candidate/{id}(id=${candidate.getId()})}">Edit Candidate</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Form Container-->
+        <form id="createCandidateForm" onsubmit="submitForm()">
+            <div class="form-container">
+
+                <!-- Form Title 1-->
+                <h5>I. Personal information</h5>
+                <div class="row">
+                    <!-- Candidate ID-->
+                    <input type="hidden" id="candidateId" th:value="${candidate.id}">
+
+                    <!-- Full name-->
+                    <div class="col-md-6 form-group">
+                        <label for="fullName" class="form-label">Full name <span class="text-danger">*</span></label>
+                        <input type="text" id="fullName" class="form-control" th:value="${candidate.fullName}"
+                            placeholder="Type a name...">
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="col-md-6 form-group">
+                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                        <input type="email" id="email" class="form-control" th:value="${candidate.email}"
+                            placeholder="Type an email...">
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- D.O.B -->
+                    <div class="col-md-6 form-group">
+                        <label for="dob" class="form-label">D.O.B</label>
+                        <input type="date" id="dob" class="form-control"
+                            th:value="${#temporals.format(candidate.dob, 'yyyy-MM-dd')}">
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Address -->
+                    <div class="col-md-6 form-group">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" id="address" class="form-control" th:value="${candidate.address}"
+                            placeholder="Type an address...">
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Phone number -->
+                    <div class="col-md-6 form-group">
+                        <label for="phoneNumber" class="form-label">Phone number</label>
+                        <input type="text" id="phoneNumber" class="form-control" th:value="${candidate.phoneNumber}"
+                            placeholder="Type a number...">
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Gender -->
+                    <div class="col-md-6 form-group">
+                        <label for="gender" class="form-label">Gender <span class="text-danger">*</span></label>
+                        <select id="gender" name="gender" class="form-select" required>
+                            <option value="" disabled>Select a gender</option>
+                            <th:block th:each="g : ${gender}">
+                                <option th:value="${g.getCategoryId()}" th:text="${g.getCategoryValue()}"
+                                    th:selected="${g.getCategoryId() == candidate.gender}">
+                                </option>
+                            </th:block>
+                        </select>
+                        <p class="error text-danger"></p>
+                    </div>
+                </div>
+
+                <!-- Form Title 2-->
+                <h5 class="mt-4">II. Professional information</h5>
+                <div class="row">
+
+                    <!-- CV attachment -->
+                    <div class="col-md-6 form-group">
+                        <label for="cv" class="form-label">CV attachment</label>
+                        <div class="input-group">
+                            <input type="text" id="cvName" class="form-control" th:value="${candidate.cvFileName}"
+                                placeholder="Attach file from your PC(.pdf, .doc, .docx)" aria-label="CV link" disabled>
+                            <label class="input-group-btn">
+                                <span class="btn btn-outline-secondary">
+                                    <i class="fas fa-upload"></i> Attach CV
+                                    <input type="file" id="cv" class="form-control" accept=".pdf,.doc,.docx"
+                                        style="display: none;">
+                                </span>
+                            </label>
+                        </div>
+                        <input type="hidden" id="cvLink" name="cvLink" th:value="${candidate.cvLink}">
+                        <p class="error text-danger"></p>
+                        <a id="seeCVLink" th:href="${candidate.cvLink}" target="_blank"
+                            th:if="${candidate.cvLink != null}">See CV</a>
+                    </div>
+
+                    <!-- Position -->
+                    <div class="col-md-6 form-group">
+                        <label for="position" class="form-label">Position <span class="text-danger">*</span></label>
+                        <select id="position" name="position" class="form-select" required>
+                            <option value="" disabled>Select a position...</option>
+                            <th:block th:each="p : ${positions}">
+                                <option th:value="${p.getCategoryId()}" th:text="${p.getCategoryValue()}"
+                                    th:selected="${p.getCategoryId() == candidate.position}">
+                                </option>
+                            </th:block>
+                        </select>
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="col-md-6 form-group">
+                        <label for="skill">Skills<span class="text-danger">*</span></label>
+                        <select name="skill" id="skill" multiple th:data-selected-skills="${candidate.skills}">
+                            <th:block th:each="s : ${skills}">
+                                <option th:value="${s.getCategoryId()}" th:text="${s.getCategoryValue()}"
+                                    th:selected="${#lists.contains(candidate.skills, s.getCategoryId())}">
+                                </option>
+                            </th:block>
+                        </select>
+
+                        <input type="hidden" id="skills">
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="col-md-6 form-group">
+                        <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                        <select id="status" name="status" class="form-select" required disabled>
+                            <option value="" disabled>Select a status</option>
+                            <th:block th:each="status : ${statuses}">
+                                <option th:value="${status.getCategoryId()}" th:text="${status.getCategoryValue()}"
+                                    th:selected="${status.getCategoryId() == candidate.status}">
+                                </option>
+                            </th:block>
+                        </select>
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="col-md-6 form-group">
+                        <label for="yoe" class="form-label">Year of Experience</label>
+                        <input type="number" id="yoe" class="form-control" th:value="${candidate.yoe}"
+                            placeholder="Type a number" oninput="validatePositiveInteger(this)">
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Level -->
+                    <div class="col-md-6 form-group">
+                        <label for="highestLevel" class="form-label">Highest level <span
+                                class="text-danger">*</span></label>
+                        <select id="highestLevel" name="highestLevel" class="form-select" required>
+                            <option value="" disabled>Select highest level</option>
+                            <th:block th:each="l : ${highestLevel}">
+                                <option th:value="${l.getCategoryId()}" th:text="${l.getCategoryValue()}"
+                                    th:selected="${l.getCategoryId() == candidate.highestLevel}">
+                                </option>
+                            </th:block>
+                        </select>
+                        <p class="error text-danger"></p>
+                    </div>
+
+                    <!-- Recruiter -->
+                    <div class="col-md-6 form-group">
+                        <label for="recruiterId" class="form-label">Recruiter <span class="text-danger">*</span></label>
+                        <select id="recruiterId" name="recruiter" class="form-select" required>
+                            <option value="" disabled>Select Recruiter</option>
+                            <th:block th:each="r : ${recruiters}">
+                                <option th:value="${r.getId()}"
+                                    th:text="${r.getFullname()} + ' (' + ${r.getUsername()} + ')'"
+                                    th:selected="${r.getId() == candidate.recruiter}">
+                                </option>
+                            </th:block>
+                        </select>
+                        <input type="hidden" id="recruiter">
+                        <p class="error text-danger"></p>
+                        <button type="button" id="assignMeBtn" class="btn btn-link mt-2 p-0" th:if="${user.roleId == 3}"
+                            th:data-user-id="${user.getId()}">Assign Me</button>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="col-md-6 form-group">
+                        <label for="note" class="form-label">Note</label>
+                        <input type="text" id="note" class="form-control" th:value="${candidate.note}"
+                            placeholder="N/A">
+                        <p class="error text-danger"></p>
+                    </div>
+                </div>
+
+                <!-- Submit and Cancel Button-->
+                <div class="d-flex justify-content-center mt-4">
+                    <button type="submit" class="btn btn-primary me-2" onclick="submitForm(event)">Submit</button>
+                    <a th:href="@{/candidates/candidate_detail/{id}(id=${candidate.getId()})}"
+                        class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form>
+        <!-- End Form Container-->
+
+        <!-- Success Modal -->
+        <div id="successModal" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Change has been successfully updated</h3>
+                <div class="modal-buttons">
+                    <a href="/api/v1/candidates/list_candidates">
+                        <button class="btn btn-success">
+                            Ok
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fail Modal -->
+        <div id="failModal" class="modal-overlay">
+            <div class="modal-content">
+                <h3>Failed to update change</h3>
+                <div class="modal-buttons">
+                    <button class="btn btn-danger" onclick="hideFailModal()">
+                        Ok
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- Multi Choice Drop List CSS-->
+    <link rel="stylesheet" type="text/css" th:href="@{/static/common/css/drop_list_multi_choice.css}" />
+    <!-- Candidate Create CSS-->
+    <link rel="stylesheet" type="text/css" th:href="@{/static/common/css/modal_success.css}" />
+
+
+    <link rel="stylesheet" type="text/css" th:href="@{/static/candidate/css/candidate_create.css}" />
+
+    <!-- Common Page JS-->
+    <script th:src="@{/static/common/js/main.js}"></script>
+    <script th:src="@{/static/common/js/drop_list_multi_choice.js}"></script>
+    <script th:src="@{/static/candidate/js/candidate_create.js}"></script>
+    <script th:src="@{/static/candidate/js/candidate_edit_form.js}"></script>
+    <script th:src="@{/static/candidate/js/upload_CV.js}" type="module"></script>
+
+    <!-- Link JS-->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+        integrity="sha384-IQsoLXlZg2K2RJGv6hD6gPZrGFIH1Kp3g9zIdenqUewg+kq2aA/tlW1LNsE/lWX/"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+        integrity="sha384-cVKIPhGWiH0eK6E4S8gaq2qkW2giKdf9/TV/rf9Wf3yDdiRIUmdXwB68jzWl7foI"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+<!-- Sidebar menu-->
+<div th:fragment="menu">
+    <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+    <aside class="app-sidebar">
+        <div class="app-sidebar__user">
+            <img
+                    class="app-sidebar__user-avatar"
+                    th:src="@{/static/common/images/logoWeb.webp}"
+                    width="50px"
+                    alt="User Image"
+            />
+        </div>
+        <hr/>
+        <ul class="app-menu">
+            <li>
+                <a class="app-menu__item no-underline" href="/api/v1/home">
+                    <i class="app-menu__icon bx bx-home"></i>
+                    <span class="app-menu__label">Home Page</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item no-underline" href="/api/v1/candidates/list_candidates">
+                    <i class="app-menu__icon bx bx-group"></i>
+                    <span class="app-menu__label">Candidate</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item no-underline" href="/api/v1/jobs/list-job">
+                    <i class="app-menu__icon bx bx-briefcase"></i>
+                    <span class="app-menu__label">Job</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item no-underline" href="/api/v1/interview">
+                    <i class="app-menu__icon bx bx-calendar-check"></i>
+                    <span class="app-menu__label">Interview</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item no-underline" href="/api/v1/offer/offer-list">
+                    <i class="app-menu__icon bx bx-file"></i>
+                    <span class="app-menu__label">Offer</span>
+                </a>
+            </li>
+            <li>
+                <a class="app-menu__item no-underline" href="/api/v1/user/get-all-user">
+                    <i class="app-menu__icon bx bx-user"></i>
+                    <span class="app-menu__label">User</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+</div>

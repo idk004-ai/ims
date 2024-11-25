@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Password Reset</title>
+</head>
+
+<body>
+    <div class="container">
+        <p class="reminder" th:text="'This email is from IMS system, You have an offer to take action For Candidate ' 
+            + ${candidateName} + ' position ' + ${position} + ' before ' + ${duedate} + 
+            ', the contract is attached with this no-reply-email'">
+        </p>
+        <p th:text="'Please refer this link to take action. ' + ${offerLink} "></p>
+        <p
+            th:text="'If anything wrong, please reach-out recruiter ' + ${approver} + ' We are so sorry for this inconvenience.'">
+        </p>
+        <p>Thanks & Regards!
+            IMS Team.”
+            Attachment: Attach the CV of the candidate</p>
+    </div>
+</body>
+
+</html>

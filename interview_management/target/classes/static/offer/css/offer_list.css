@@ -1,0 +1,149 @@
+/* Make the user avatar circular */
+.user-avatar {
+    border-radius: 50%;
+}
+
+/* Add transition effect to icons on hover */
+.icon-hover i {
+    transition: transform 0.2s ease;
+}
+
+/* Scale icons to 1.5x on hover */
+.icon-hover:hover i {
+    transform: scale(1.5);
+}
+
+/* Display icons inline without underline */
+.icon-hover {
+    display: inline-block;
+    text-decoration: none;
+}
+
+/* Dropdown menu styling for profile */
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 55px;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    min-width: 150px;
+}
+
+/* Styling for each dropdown item */
+.profile-dropdown .dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+}
+
+/* Change background color on hover for dropdown items */
+.profile-dropdown .dropdown-item:hover {
+    background-color: #f1f1f1;
+}
+
+/* Display dropdown menu on hover */
+.dropdown:hover .profile-dropdown {
+    display: block;
+}
+
+/* Center align all content in the action column */
+.action-column {
+    text-align: center;
+}
+
+/* Change the page link color to black */
+.page-link {
+    color: black;
+}
+
+/* Remove underline for links */
+.no-underline {
+    text-decoration: none !important;
+}
+
+/* Styling for application title */
+.app-title {
+    background-color: lightgrey;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Remove background and padding for breadcrumb */
+.breadcrumb {
+    background: none;
+    padding: 0;
+}
+
+/* Style for breadcrumb links */
+.breadcrumb-item a {
+    color: black;
+    text-decoration: none;
+    font-size: 1.2em;
+}
+
+/* Underline breadcrumb links on hover */
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+/* Custom button styling */
+.btn-custom {
+    background-color: #9d9d9d;
+    color: white;
+}
+
+/* Change background color on hover for custom button */
+.btn-custom:hover {
+    background-color: #9dc1d3;
+}
+
+/* Custom styling for Add Candidate button */
+.btn-custom-add {
+    background-color: #9d9d9d;
+    color: white;
+}
+
+/* Change background color on hover for Add Candidate button */
+.btn-custom-add:hover {
+    background-color: #9dc1d3;
+}
+
+/* Styling for pagination links */
+.pagination .page-item .page-link {
+    color: #fff;
+    background-color: #9d9d9d;
+    border-color: #9dc1d3;
+    border-radius: 8px;
+    margin: 0 5px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+/* Style for active page link */
+.pagination .page-item.active .page-link {
+    background-color: black;
+    border-color: black;
+}
+
+/* Change background color and scale on hover for page links */
+.pagination .page-item .page-link:hover {
+    background-color: #2a383e;
+    border-color: #2a383e;
+    transform: scale(1.1);
+}
+
+/* Add top margin to pagination */
+.pagination {
+    margin-top: 30px;
+}
+
+/* Round the Previous and Next pagination buttons */
+.pagination .page-item:first-child .page-link,
+.pagination .page-item:last-child .page-link {
+    border-radius: 50%;
+}
