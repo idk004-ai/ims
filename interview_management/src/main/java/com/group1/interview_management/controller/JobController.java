@@ -162,11 +162,11 @@ public class JobController {
     @PostMapping("/create-job")
     public ResponseEntity<?> createJob(@Valid @RequestBody JobCreationRequest request, BindingResult errors,
                                        Authentication authenticatedUser) {
+        jobService.saveJob(request, "create", errors, authenticatedUser);
         if (errors.hasErrors()) {
             return ResponseEntity.badRequest()
                     .body(errors.getAllErrors());
         }
-        jobService.saveJob(request, "create", errors, authenticatedUser);
 
         return ResponseEntity.ok().build();
     }

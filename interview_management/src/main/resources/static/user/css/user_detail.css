@@ -5,7 +5,7 @@ body {
 
 .app-content {
     padding: 20px;
-    margin-top: 20px; /* Spacing for the top button */
+    margin-top: 20px; 
 }
 
 h2 {
@@ -32,13 +32,13 @@ h2 {
     font-size: 1.2em;
 }
 
-/* New style for user details container */
+
 .user-details-container {
-    background-color: #9b9b9b68; /* Light gray background */
-    padding: 20px; /* Adds padding for better readability */
-    border-radius: 8px; /* Optional: rounds the corners */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: gives a subtle shadow */
-    margin-bottom: 20px; /* Adds spacing below the container */
+    background-color: #9b9b9b68;
+    padding: 20px; 
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    margin-bottom: 20px; 
 }
 
 .form-label {
@@ -91,9 +91,9 @@ h2 {
 }
 
 .d-flex .btn-success {
-    margin-bottom: 20px; /* Adjusts spacing under the button */
+    margin-bottom: 20px;
 }
 
 .no-underline {
-    text-decoration: none !important; /* Override with !important if necessary */
+    text-decoration: none !important; 
 }

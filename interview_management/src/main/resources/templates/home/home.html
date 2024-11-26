@@ -1,23 +1,58 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <meta charset="UTF-8" />
-        <title>Home</title>
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-        />
-        <link
-            rel="stylesheet"
-            th:href="@{/static/assets/css/home/home-style.css}"
-        />
-    </head>
 
-    <body>
-        <!-- Navbar-->
-        <div th:replace="fragments/header :: header"></div>
-        <!-- Sidebar menu-->
-        <div th:replace="fragments/menu :: menu"></div>
-        
-    </body>
+<head>
+    <meta charset="UTF-8" />
+    <title>Home</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" th:href="@{/static/assets/css/home/home-style.css}" />
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content img {
+            width: 100%;
+            height: 80%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar-->
+    <div th:replace="fragments/header :: header"></div>
+
+    <!-- Sidebar menu-->
+    <div th:replace="fragments/menu :: menu"></div>
+
+    <div class="clock-container">
+        <div class="clock-item">
+            <div class="circle" id="hour-circle"></div>
+            <p><span id="hours"></span> <br>Hours</p>
+        </div>
+        <div class="clock-item">
+            <div class="circle" id="minute-circle"></div>
+            <p><span id="minutes"></span> <br>Minutes</p>
+        </div>
+        <div class="clock-item">
+            <div class="circle" id="second-circle"></div>
+            <p><span id="seconds"></span> <br>Seconds</p>
+        </div>
+        <div class="period" id="period"></div>
+    </div>
+    <script th:src="@{/static/assets/js/script.js}"></script>
+
+</body>
+
 </html>

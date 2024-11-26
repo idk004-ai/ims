@@ -1,6 +1,8 @@
 package com.group1.interview_management.services;
 
 import com.group1.interview_management.dto.Offer.OfferExportDTO;
+import com.group1.interview_management.entities.Interview;
+
 import org.springframework.data.domain.Page;
 
 import com.group1.interview_management.dto.OfferCreateDTO;
@@ -33,4 +35,6 @@ public interface OfferService {
     void cancelOffer(Integer id);
 
     List<OfferExportDTO> getOfferByDueDate(LocalDate periodFrom, LocalDate periodTo);
+
+    List<Interview> getAllUpcomingOffer(LocalDate startDate, LocalDate endDate);
 }

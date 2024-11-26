@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Expired | IMS Recruitment</title>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <img th:src="@{/static/assets/img/logo/dev.png}" alt="IMS Recruitment Logo" class="logo">
+        <link rel="stylesheet" type="text/css" th:href="@{/static/user/css/link_expired.css}" />
+        <h1 class="header-title">IMS Recruitment</h1>
+    </div>
+</header>
+
+<main>
+    <div class="not-found-container">
+        <h2>Error - Expired link</h2>
+        <p>This link has expired. Please go back to Homepage and try again.</p>
+        <a href="/api/v1/home" class="back-home-btn">Go Back to Home</a>
+    </div>
+</main>
+
+</body>
+</html>

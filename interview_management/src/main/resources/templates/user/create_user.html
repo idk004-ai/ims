@@ -18,6 +18,23 @@
             </div>
         </div>
     </div>
+    <div id="successPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <div style="text-align: center; font-size: 3em; color: green;">
+                &#10004;
+            </div>
+            <h4 style="text-align: center;">Successfully created user</h4>
+        </div>
+    </div>
+    <div id="failPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <div style="display: flex; align-items: center;">       
+                <h4 class="text-danger" style="margin: 0;">Failed to create user</h4>
+            </div>
+        </div>
+    </div>
+    
+    
     <div th:replace="fragments/header :: header"></div>
     <div th:replace="fragments/menu :: menu"></div>
     <main class="app-content">

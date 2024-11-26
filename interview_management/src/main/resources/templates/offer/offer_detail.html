@@ -67,15 +67,8 @@
                             Offer</button>
                     </div>
                 </div>
+                <div id="statusOfferError" class="alert alert-danger" th:if="${statusOfferError != null}" th:text="${statusOfferError}"></div>
                 <!-- Modal Confirmation -->
-                <div id="cancelConfirmationModal" style="display: none;">
-                    <div style="background-color: #f0f4f8; padding: 20px; border-radius: 5px; text-align: center;">
-                        <h3>Are you sure you want to cancel this offer?</h3>
-                        <button id="confirmCancel" class="btn btn-warning">Yes</button>
-                        <button id="cancelModal" class="btn btn-light"
-                            onclick="closeCancelConfirmationModal()">No</button>
-                    </div>
-                </div>
 
                 <div class="col-md-6 info-row">
                     <label for="candidate-name" class="label">Candidate :</label>

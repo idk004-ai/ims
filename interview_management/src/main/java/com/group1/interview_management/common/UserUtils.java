@@ -15,7 +15,7 @@ public class UserUtils {
     }
 
     public static String encodeUsername(String username) {
-        String[] array = username.split(" ");
+        String[] array = username.trim().split(" ");
         String encodedUsername = array[array.length - 1];
         for (int i = 0; i < array.length - 1; i++) {
             encodedUsername += array[i].charAt(0);

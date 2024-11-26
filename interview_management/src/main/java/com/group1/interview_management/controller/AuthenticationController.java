@@ -9,6 +9,7 @@ import com.group1.interview_management.common.EmailTemplateName;
 import com.group1.interview_management.common.JwtName;
 import com.group1.interview_management.common.JwtTokenUtils;
 import com.group1.interview_management.common.LinkUtil;
+import com.group1.interview_management.config.DomainConfig;
 import com.group1.interview_management.dto.JwtTokenDTO;
 import com.group1.interview_management.dto.LoginDTO;
 import com.group1.interview_management.dto.RegistrationDTO;
@@ -73,8 +74,7 @@ public class AuthenticationController {
     private Integer jwtExpiration;
     @Value("${jwt.refresh-token.expiration}")
     private Integer refreshExpiration;
-    @Value("${app.domain}")
-    private String[] domains;
+    private final DomainConfig domainConfig;
 
     @GetMapping("/login")
     public String showLoginPage(HttpServletRequest request, Model model) {
@@ -107,28 +107,22 @@ public class AuthenticationController {
 
             // Set JWT token in cookie
             jwtService.setTokenInsideCookie(response, jwtToken);
+            String defaultRedirectUrl = domainConfig.domainUrl() + "/api/v1/home";
 
-            // Kiểm tra nếu request là từ API client (Postman)
             String acceptHeader = request.getHeader("Accept");
             boolean isApiRequest = acceptHeader != null && acceptHeader.contains("application/json");
 
             if (isApiRequest) {
-                // Nếu là API request, trả về token và không redirect
                 return ResponseEntity.ok(Map.of(
                         "success", true,
                         "token", jwtToken,
-                        "redirectUrl", "/api/v1/home" // Luôn trả về home cho API requests
+                        "redirectUrl", defaultRedirectUrl 
                 ));
             }
 
             // Check for saved request
             SavedRequest savedRequest = requestCache.getRequest(request, response);
-            String redirectUrl = domains[0] + "/api/v1/home"; // default redirect
-
-            if (savedRequest != null) {
-                redirectUrl = savedRequest.getRedirectUrl();
-                requestCache.removeRequest(request, response);
-            }
+            String redirectUrl = savedRequest != null ? savedRequest.getRedirectUrl() : defaultRedirectUrl;
 
             return ResponseEntity.ok(Map.of(
                     "success", true,
@@ -176,40 +170,33 @@ public class AuthenticationController {
         return "forgot_password";
     }
 
-    @PostMapping("/forgot-password")
-    public String handleForgotPassword(@ModelAttribute User user, Model model, RedirectAttributes redirectAttributes)
-            throws MessagingException {
-        try {
-            UserDTO userDTO = userService.getUserByEmail(user.getEmail());
-            String informMessage = messageSource.getMessage("email.linksent", null, Locale.getDefault());
-            String uuid = UUID.randomUUID().toString();
-            if (masterService.findByCategoryAndValue(ConstantUtils.USER_STATUS, userDTO.getStatus()).get()
-                    .getCategoryValue().equals(ConstantUtils.USER_ACTIVE)) {
-                // emailService.sendVerificationLink(user.getEmail(),
-                // user.getEmail(),
-                // EmailTemplateName.RESET_PASSWORD_EMAIL,
-                // LinkUtil.generateLink(uuid),
-                // "Password Reset");
-                Map<String, Object> props = new HashMap<>();
-                props.put("email", user.getEmail());
-                props.put("URL", LinkUtil.generateLink(uuid));
-                emailService.sendMail(ConstantUtils.PASSWORD_RESET, EmailService.DEFAULT_SENDER, user.getEmail(),
-                        EmailTemplateName.RESET_PASSWORD_EMAIL, props, false);
-                emailPeriodService.addResetPasswordRequest(LocalDateTime.now(), LocalDateTime.now().plusDays(1),
-                        userDTO.getId(), false, uuid);
-                redirectAttributes.addFlashAttribute("message", informMessage);
-                redirectAttributes.addFlashAttribute("flag", true);
-            } else {
-                redirectAttributes.addFlashAttribute("message",
-                        messageSource.getMessage("MEU001", null, Locale.getDefault()));
-                redirectAttributes.addFlashAttribute("flag", false);
-            }
-        } catch (RuntimeException e) {
-            String errorMessage = messageSource.getMessage("email.notfound", null, Locale.getDefault());
-            redirectAttributes.addFlashAttribute("message", errorMessage);
-            redirectAttributes.addFlashAttribute("flag", false);
-        }
-        return "redirect:/auth/forgot-password";
-    }
+     @PostMapping("/forgot-password")
+     public String handleForgotPassword(@ModelAttribute User user, Model model, RedirectAttributes redirectAttributes)
+               throws MessagingException {
+          try {
+               UserDTO userDTO = userService.getUserByEmail(user.getEmail());
+               String informMessage = messageSource.getMessage("email.linksent", null, Locale.getDefault());
+               String uuid = UUID.randomUUID().toString();
+               if(masterService.findByCategoryAndValue(ConstantUtils.USER_STATUS, userDTO.getStatus()).get().getCategoryValue().equals(ConstantUtils.USER_ACTIVE)){
+               Map<String, Object> props = new HashMap<>();
+               props.put("email", user.getEmail());
+               props.put("URL", LinkUtil.generateLink(uuid));
+               emailService.sendMail(ConstantUtils.PASSWORD_RESET,EmailService.DEFAULT_SENDER , user.getEmail(), EmailTemplateName.RESET_PASSWORD_EMAIL, props, false);
+               emailPeriodService.addResetPasswordRequest(LocalDateTime.now(),LocalDateTime.now().plusDays(1),
+                                                          userDTO.getId(),false ,uuid);
+               redirectAttributes.addFlashAttribute("message", informMessage);
+               redirectAttributes.addFlashAttribute("flag", true);
+               }
+               else{
+               redirectAttributes.addFlashAttribute("message", messageSource.getMessage("MEU001", null, Locale.getDefault()));
+               redirectAttributes.addFlashAttribute("flag", false);
+               }
+          } catch (RuntimeException e) {
+               String errorMessage = messageSource.getMessage("ME005", null, Locale.getDefault());
+               redirectAttributes.addFlashAttribute("message", errorMessage);
+               redirectAttributes.addFlashAttribute("flag", false);
+          }
+          return "redirect:/auth/forgot-password";
+     }
 
 }

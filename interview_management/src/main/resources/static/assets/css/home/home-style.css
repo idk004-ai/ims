@@ -16,8 +16,9 @@ body {
 }
 
 .no-underline {
-     text-decoration: none !important; /* Ghi đè bằng !important nếu cần thiết */
- }
+     text-decoration: none !important;
+     /* Ghi đè bằng !important nếu cần thiết */
+}
 
 .sidebar ul {
      list-style-type: none;
@@ -88,6 +89,93 @@ body {
      font-weight: bold;
 }
 
-.login-logout a:hover{
+.login-logout a:hover {
      text-decoration: underline;
+}
+
+body {
+     background: #000;
+     color: #fff;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     height: 100vh;
+     margin: 0;
+     font-family: Arial, sans-serif;
+}
+
+.clock-container {
+     display: flex;
+     gap: 20px;
+}
+
+.clock-item {
+     position: relative;
+     width: 300px;
+     height: 300px;
+     text-align: center;
+}
+
+.clock-item p {
+     margin-top: 10px;
+     font-size: 60px;
+}
+
+.circle {
+     width: 300px;
+     height: 300px;
+     border: 5px solid rgba(255, 255, 255, 0.1);
+     border-radius: 50%;
+     position: absolute;
+}
+
+#hour-circle {
+     border-top-color: pink;
+     animation: rotate-hour 43200s linear infinite;
+}
+
+#minute-circle {
+     border-top-color: yellow;
+     animation: rotate-minute 3600s linear infinite;
+}
+
+#second-circle {
+     border-top-color: lime;
+     animation: rotate-second 60s linear infinite;
+}
+
+@keyframes rotate-hour {
+     from {
+          transform: rotate(0deg);
+     }
+
+     to {
+          transform: rotate(360deg);
+     }
+}
+
+@keyframes rotate-minute {
+     from {
+          transform: rotate(0deg);
+     }
+
+     to {
+          transform: rotate(360deg);
+     }
+}
+
+@keyframes rotate-second {
+     from {
+          transform: rotate(0deg);
+     }
+
+     to {
+          transform: rotate(360deg);
+     }
+}
+
+.period {
+     font-size: 40px;
+     margin-left: 10px;
+     align-self: center;
 }

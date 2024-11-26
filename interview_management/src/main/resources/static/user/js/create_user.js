@@ -86,6 +86,21 @@ $(document).ready(function() {
         $(`#${fieldName}Error`).hide().empty();
     }
 
+    function showSuccessPopup() {
+        $('#successPopup').fadeIn();
+        setTimeout(function() {
+            window.location.href = "http://localhost:9090/api/v1/user/get-all-user";
+        }, 2000);
+    }
+
+    function showFailPopup() {
+        $('#failPopup').fadeIn();
+    }
+
+    function hideFailPopup() {
+        $('#failPopup').fadeOut();
+    }
+
     function submitForm(data) {
         $.ajax({
             url: '/api/v1/user/add-user',
@@ -94,19 +109,29 @@ $(document).ready(function() {
             data: JSON.stringify(data),
             success: function(response) {
                 if (response.success) {
-                    $('#message').text("User added successfully!").css("color", "green").show();
-                    setTimeout(function() {
-                        $('#message').fadeOut();
-                    }, 2000);
+                    showSuccessPopup();
                 } else {
                     displayErrors(response.errors);
                 }
             },
-            error: function() {
-                $('#message').text("Failed to create user").css("color", "red").show();
+            error: function(xhr) {
+                const errors = xhr.responseJSON;
+                if (errors.errors.email) {
+                    $("#emailError").text(errors.errors.email).show();
+                }
+                if(errors.errors.fullname){
+                    $("#fullnameError").text(errors.errors.fullname).show();
+                }
+                if(errors.errors.dob){
+                    $("#dobError").text(errors.errors.dob).show();
+                }
+                if (errors.errors.phoneNo) {
+                    $("#phoneNoError").text(errors.errors.phoneNo).show();
+                }
+                showFailPopup();
                 setTimeout(function() {
-                    $('#message').fadeOut();
-                }, 2000);
+                   hideFailPopup();
+                }, 1500);
             }
         });
     }

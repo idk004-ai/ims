@@ -18,6 +18,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -39,13 +40,13 @@ import com.group1.interview_management.services.UserService;
 import com.group1.interview_management.entities.User;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/offer")
-@Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
 
 @Slf4j
 public class OfferController {
@@ -70,6 +71,7 @@ public class OfferController {
      * @param model model need to display in offer list page
      * @return offer_list.html
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @GetMapping("/offer-list")
     public String offer_list(Model model) {
         List<Master> statuses = masterService.findByCategory("OFFER_STATUS");
@@ -111,6 +113,7 @@ public class OfferController {
      * @param model The Model object to add attributes for the view.
      * @return The view name for the offer creation page.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @GetMapping("/add-new-offer")
     public String showOfferCreateForm(Model model) {
         // Retrieve lists of contract types and departments by their categories.
@@ -167,6 +170,7 @@ public class OfferController {
      * @throws MessagingException If an error occurs while sending any messages
      *                            (e.g., email).
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @PostMapping("/offer_create")
     public ResponseEntity<?> createOffer(@Valid @RequestBody OfferCreateDTO offerCreateDTO, BindingResult result)
             throws MessagingException {
@@ -194,6 +198,7 @@ public class OfferController {
      * @param id The ID of the offer to be retrieved.
      * @return The details of the offer in the form of an OfferCreateDTO.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @GetMapping("/get-offer-info")
     @ResponseBody
     public OfferCreateDTO getoffer(@RequestParam(value = "id") Integer id) {
@@ -210,6 +215,7 @@ public class OfferController {
      * @param model The Model object to add attributes for the view.
      * @return The view name for the offer detail page.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @GetMapping("/offer-detail/{id}")
     public String offer_detail(@PathVariable Integer id, Model model) {
         // Retrieve the offer details by ID using the service layer.
@@ -266,6 +272,7 @@ public class OfferController {
      * @param result         The binding result to capture any validation errors.
      * @return A response indicating the success or failure of the offer update.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @PostMapping("/offer_edit")
     public ResponseEntity<?> editOffer(@Valid @RequestBody OfferCreateDTO offerCreateDTO, BindingResult result) {
         // If there are validation errors, log the failure and return a bad request
@@ -290,6 +297,7 @@ public class OfferController {
      * @param locale     - Locale
      * @throws IOException - IOException
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @GetMapping("/export_offer")
     public void exportToExcel(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate periodFrom,
@@ -428,11 +436,21 @@ public class OfferController {
      * @param model The Model object to add attributes for the view.
      * @return The name of the view to display the offer edit form.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @GetMapping("/offer-edit/{id}")
-    public String showOfferEditForm(@PathVariable("id") Integer id, Model model) {
+    public String showOfferEditForm(@PathVariable("id") Integer id, Model model,
+            RedirectAttributes redirectAttributes) {
         // Retrieve the offer details by ID using the service layer.
         OfferCreateDTO offer = offerService.getOfferCreateDTOById(id);
 
+        //
+        if (offer.getStatus() != 1) {
+            // Add an error message to notify the user.
+            String statusOfferError = messageSource.getMessage("ME.EditOfferStatus", null, Locale.getDefault());
+            redirectAttributes.addFlashAttribute("statusOfferError", statusOfferError);
+            // Redirect to a different page (e.g., offer list page).
+            return "redirect:/offer/offer-list";
+        }
         // Retrieve the list of contract types and departments from the master service.
         List<Master> contracttypes = masterService.findByCategory(ConstantUtils.CONTRACT_TYPE);
         List<Master> departments = masterService.findByCategory(ConstantUtils.DEPARTMENT);
@@ -465,8 +483,20 @@ public class OfferController {
      * @param id The ID of the offer to be approved.
      * @return ResponseEntity with a success message.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER"})
     @PostMapping("/approve/{id}")
-    public ResponseEntity<?> approveOffer(@PathVariable Integer id) {
+    public ResponseEntity<?> approveOffer(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
+        // Retrieve the offer details by ID using the service layer.
+        OfferCreateDTO offer = offerService.getOfferCreateDTOById(id);
+
+        // Check if the offer status is not equal to 1 (Waiting for approve).
+        if (offer.getStatus() != 1) {
+            String statusOfferError = messageSource.getMessage("ME.StatusApproveWrong", null, Locale.getDefault());
+            redirectAttributes.addFlashAttribute("statusOfferError", statusOfferError);
+            // Redirect to a different page (e.g., offer list page).
+            return ResponseEntity.badRequest().build();
+        }
+        
         // Approve the offer by passing its ID to the service layer.
         offerService.approveOffer(id);
         // Return a success response after the offer has been approved.
@@ -480,8 +510,18 @@ public class OfferController {
      * @param id The ID of the offer to be rejected.
      * @return ResponseEntity with a success message.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER"})
     @PostMapping("/reject/{id}")
     public ResponseEntity<?> rejectOffer(@PathVariable Integer id) {
+        // Retrieve the offer details by ID using the service layer.
+        OfferCreateDTO offer = offerService.getOfferCreateDTOById(id);
+
+        // Check if the offer status is not equal to 1 (Waiting for approve).
+        if (offer.getStatus() != 1) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("You can not reject this offer because it is not in the Waiting for approve status");
+        }
+
         // Reject the offer by passing its ID to the service layer.
         offerService.rejectOffer(id);
         // Return a success response after the offer has been rejected.
@@ -495,8 +535,17 @@ public class OfferController {
      * @param id The ID of the offer to be sent.
      * @return ResponseEntity with a success message.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @PostMapping("/sentOffer/{id}")
     public ResponseEntity<?> sentOffer(@PathVariable Integer id) {
+        // Retrieve the offer details by ID using the service layer.
+        OfferCreateDTO offer = offerService.getOfferCreateDTOById(id);
+
+        // Check if the offer status is not equal to 1 (Waiting for approve).
+        if (offer.getStatus() != 2) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("You can not sent this offer because it is not in the Approved offer status");
+        }
         // Send the offer by passing its ID to the service layer.
         offerService.sentOffer(id);
         // Return a success response after the offer has been sent.
@@ -510,8 +559,17 @@ public class OfferController {
      * @param id The ID of the offer to be accepted.
      * @return ResponseEntity with a success message.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @PostMapping("/accept/{id}")
     public ResponseEntity<?> acceptOffer(@PathVariable Integer id) {
+        // Retrieve the offer details by ID using the service layer.
+        OfferCreateDTO offer = offerService.getOfferCreateDTOById(id);
+
+        // Check if the offer status is not equal to 1 (Waiting for approve).
+        if (offer.getStatus() != 4) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("You can not accept this offer because it is not in the Waiting for response status");
+        }
         // Accept the offer by passing its ID to the service layer.
         offerService.acceptOffer(id);
         // Return a success response after the offer has been accepted.
@@ -525,8 +583,17 @@ public class OfferController {
      * @param id The ID of the offer to be declined.
      * @return ResponseEntity with a success message.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @PostMapping("/declined/{id}")
     public ResponseEntity<?> declinedOffer(@PathVariable Integer id) {
+        // Retrieve the offer details by ID using the service layer.
+        OfferCreateDTO offer = offerService.getOfferCreateDTOById(id);
+
+        // Check if the offer status is not equal to 1 (Waiting for approve).
+        if (offer.getStatus() != 4) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("You can not declined this offer because it is not in the Waiting for response status");
+        }
         // Decline the offer by passing its ID to the service layer.
         offerService.declinedOffer(id);
         // Return a success response after the offer has been declined.
@@ -540,8 +607,17 @@ public class OfferController {
      * @param id The ID of the offer to be canceled.
      * @return ResponseEntity with a success message.
      */
+    @Secured({ "ROLE_ADMIN", "ROLE_MANAGER", "ROLE_RECRUITER" })
     @PostMapping("/cancel/{id}")
     public ResponseEntity<?> cancelOffer(@PathVariable Integer id) {
+        // Retrieve the offer details by ID using the service layer.
+        OfferCreateDTO offer = offerService.getOfferCreateDTOById(id);
+
+        // Check if the offer status is not equal to 1 (Waiting for approve).
+        if (offer.getStatus() == 3 || offer.getStatus() == 7) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("You can not cancel this offer because it is not in the available status");
+        }
         // Cancel the offer by passing its ID to the service layer.
         offerService.cancelOffer(id);
         // Return a success response after the offer has been canceled.

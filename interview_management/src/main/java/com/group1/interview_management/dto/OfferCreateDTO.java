@@ -34,6 +34,7 @@ public class OfferCreateDTO {
     LocalDateTime modifiedDate;
     String modifiedBy;
     String interviewinfo;
+    int status;
 
     @NotBlank(message = "{ME002}")
     String approver;
@@ -54,15 +55,15 @@ public class OfferCreateDTO {
     @Size(max = 500, message = "{OfferNote.size}")
     String OfferNote;
 
-    @AssertTrue(message = "Contract 'To' date must be after 'From' date.")
+    @AssertTrue(message = "{MEContractTo}")
     public boolean isContractToAfterFrom() {
-        if(periodfrom == null){
+        if(periodfrom == null || periodto == null){
             return true;
         }
         return periodto != null && periodfrom != null && periodto.isAfter(periodfrom);
     }
 
-    @AssertTrue(message = "Contract 'From' date must be after the current date.")
+    @AssertTrue(message = "{MEContractFrom}")
     public boolean isContractFromAfterToday() {
         if(periodto == null){
             return true;
@@ -70,7 +71,7 @@ public class OfferCreateDTO {
         return periodfrom != null && periodfrom.isAfter(LocalDate.now());
     }
 
-    @AssertTrue(message = "Due date must be within the contract period.")
+    @AssertTrue(message = "{MEDueDate}")
     public boolean isDueDateWithinPeriod() {
         if (duedate == null || periodfrom == null || periodto == null) {
             return true;

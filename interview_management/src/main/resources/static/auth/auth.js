@@ -24,16 +24,7 @@ $(document).ready(function () {
                 password: password
             }).then((response) => {
                 if (response.success) {
-                    // Nếu có token trong response (API request)
-                    if (response.token) {
-                        // Xử lý token nếu cần
-                        window.location.href = '/api/v1/home';
-                    } else {
-                        // Browser request - sử dụng redirectUrl
-                        window.location.href = response.redirectUrl;
-                    }
-                } else {
-                    $('#loginError').text('Login failed').show();
+                    window.location.href = response.redirectUrl;
                 }
             }).catch(error => {
                 $('#loginError').text('Invalid email or password').show();

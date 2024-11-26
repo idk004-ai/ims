@@ -58,7 +58,7 @@ function loadPage(
         query: searchQuery
     }
     initApi().then(api => {
-        api.post(`/interview/all`, payload)
+        api.post(`/interview`, payload)
             .then((data) => {
                 updateInterviewTable(data.content);
                 renderPagination(data.totalPages, data.number);
@@ -75,14 +75,15 @@ async function searchInterviews() {
         const statusFilter = document.getElementById('status-filter').value;
         const interviewerFilter = document.getElementById('interviewer-list').value;
 
-        const response = await fetch(`/api/v1/interview/search?query=${searchQuery}&status=${statusFilter}&interviewer=${interviewerFilter}`);
-
-        if (!response.ok) {
-            throw new Error('Search failed');
-        }
-
-        const data = await response.json();
-        updateInterviewTable(data);
+        initApi().then(api => {
+            api.post(`/interview?query=${searchQuery}&interviewStatus=${statusFilter}&interviewer=${interviewerFilter}`)
+                .then((data) => {
+                    updateInterviewTable(data.content);
+                    renderPagination(data.totalPages, data.number);
+                }).catch(error => {
+                    console.error(error);
+                });
+        });
     } catch (error) {
         console.error('Error during search:', error);
         // Show error message to user
@@ -148,7 +149,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     searchButton.addEventListener('click', function () {
         const searchValue = searchInput.value.trim();
-        console.log('search button clicked' + searchValue);
         urlParams.set('query', searchValue);
         window.history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
         loadPage(0);

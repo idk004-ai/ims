@@ -1,6 +1,5 @@
 package com.group1.interview_management.repositories;
 
-import com.group1.interview_management.dto.Offer.OfferDetailDTO;
 import com.group1.interview_management.dto.Offer.OfferExportDTO;
 import com.group1.interview_management.dto.OfferDTO;
 import com.group1.interview_management.entities.Interview;
@@ -44,8 +43,8 @@ public interface OfferRepository extends JpaRepository<Interview, Integer> {
      * Find offer by due date
      *
      * @param periodFrom - Date from
-     * @param periodTo - Date to
-     * @return  return List of OfferDetailDTO
+     * @param periodTo   - Date to
+     * @return return List of OfferDetailDTO
      */
     @Query("""
             SELECT new com.group1.interview_management.dto.Offer.OfferExportDTO(
@@ -66,7 +65,17 @@ public interface OfferRepository extends JpaRepository<Interview, Integer> {
             @Param("periodTo") LocalDate periodTo,
             @Param("position") String position,
             @Param("contractType") String contractType,
-            @Param("department") String department
-    );
+            @Param("department") String department);
 
+    @Query("""
+            SELECT i
+            FROM Interview i
+            LEFT JOIN FETCH i.candidate c
+            LEFT JOIN FETCH i.approver u
+            WHERE i.dueDate BETWEEN :startDate AND :endDate
+            AND i.statusOfferId IN (:statuses)
+            ORDER BY i.dueDate ASC
+            """)
+    List<Interview> findUpcomingOffersInDateRange(LocalDate startDate, LocalDate endDate,
+            List<Integer> statuses);
 }

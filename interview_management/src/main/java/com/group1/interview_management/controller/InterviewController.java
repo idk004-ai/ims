@@ -63,11 +63,16 @@ public class InterviewController {
           return "interview/interview-list";
      }
 
-     @PostMapping("/all")
+     @PostMapping
      @ResponseBody
      public ResponseEntity<Page<InterviewDTO>> getInterview(
                @RequestBody(required = false) InterviewFilterDTO filter,
                Authentication authenticatedUser) {
+          User user = (User) authenticatedUser.getPrincipal();
+          if (user == null) {
+               String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
+               throw new AccessDeniedException(err);
+          }
           return ResponseEntity.ok(interviewService.getAllInterview(filter, authenticatedUser));
      }
 
@@ -133,8 +138,10 @@ public class InterviewController {
      @GetMapping("/submit/{interviewId}")
      public String getSubmitResultPage(@PathVariable Integer interviewId, Model model) {
           EditInterviewDTO interview = interviewService.getInterviewDisplayableInfo(interviewId);
-          int statusId = masterService.findByCategoryAndValue(ConstantUtils.INTERVIEW_STATUS, interview.getStatus()).get().getCategoryId();
-          boolean isInvalidStatus = StatusValidator.isInvalidStatus(statusId, List.of(ConstantUtils.INTERVIEW_STATUS_CANCELLED, ConstantUtils.INTERVIEW_STATUS_CLOSED));
+          int statusId = masterService.findByCategoryAndValue(ConstantUtils.INTERVIEW_STATUS, interview.getStatus())
+                    .get().getCategoryId();
+          boolean isInvalidStatus = StatusValidator.isInvalidStatus(statusId,
+                    List.of(ConstantUtils.INTERVIEW_STATUS_CANCELLED, ConstantUtils.INTERVIEW_STATUS_CLOSED));
           if (isInvalidStatus) {
                return "redirect:/interview";
           }
@@ -164,8 +171,10 @@ public class InterviewController {
      @GetMapping("/edit/{interviewId}")
      public String getEditForm(@PathVariable Integer interviewId, Model model) {
           EditInterviewDTO interview = interviewService.getInterviewDisplayableInfo(interviewId);
-          int statusId = masterService.findByCategoryAndValue(ConstantUtils.INTERVIEW_STATUS, interview.getStatus()).get().getCategoryId();
-          boolean isInvalidStatus = StatusValidator.isInvalidStatus(statusId, List.of(ConstantUtils.INTERVIEW_STATUS_CANCELLED, ConstantUtils.INTERVIEW_STATUS_CLOSED));
+          int statusId = masterService.findByCategoryAndValue(ConstantUtils.INTERVIEW_STATUS, interview.getStatus())
+                    .get().getCategoryId();
+          boolean isInvalidStatus = StatusValidator.isInvalidStatus(statusId,
+                    List.of(ConstantUtils.INTERVIEW_STATUS_CANCELLED, ConstantUtils.INTERVIEW_STATUS_CLOSED));
           if (isInvalidStatus) {
                return "redirect:/interview";
           }

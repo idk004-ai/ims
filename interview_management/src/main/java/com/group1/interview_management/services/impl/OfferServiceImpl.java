@@ -171,6 +171,7 @@ public class OfferServiceImpl implements OfferService {
         offerCreateDTO.setOfferNote(interview.getOfferNote());
         offerCreateDTO.setEmail(interview.getCandidate().getEmail());
         offerCreateDTO.setInterviewId(id);
+        offerCreateDTO.setStatus(interview.getStatusOfferId());
         return offerCreateDTO;
     }
 
@@ -245,5 +246,9 @@ public class OfferServiceImpl implements OfferService {
         offer.setStatusOfferId(7);
         offer.getCandidate().setStatusId(11);
         offerRepository.save(offer);
+    }
+
+    public List<Interview> getAllUpcomingOffer(LocalDate start, LocalDate end) {
+        return offerRepository.findUpcomingOffersInDateRange(start, end, List.of(ConstantUtils.OFFER_STATUS_WAITING_FOR_APPROVAL));
     }
 }

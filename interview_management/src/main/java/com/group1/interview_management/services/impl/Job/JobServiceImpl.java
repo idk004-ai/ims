@@ -94,20 +94,12 @@ public class JobServiceImpl implements JobService {
             Job j = jobRepository.getJobByJobId(job.getJobId());
             job.updateCreatedBy(j.getCreatedBy());
             job.updateCreatedDate(j.getCreatedDate());
-            String status = request.getStatusJob();
-            switch (status) {
-                case "Draft":
-                    job.setStatusJobId(1);
-                    break;
-                case "Open":
-                    job.setStatusJobId(2);
-                    break;
-                case "Close":
-                    job.setStatusJobId(3);
-                    break;
-                default:
-                    job.setStatusJobId(1);
-                    break;
+            if (!compareDate(job.getStartDate(), LocalDate.now())) {
+                job.setStatusJobId(1);
+            }else if (!compareDate(job.getEndDate(), LocalDate.now())) {
+                job.setStatusJobId(2);
+            }else {
+                job.setStatusJobId(3);
             }
         }
 
@@ -378,7 +370,7 @@ public class JobServiceImpl implements JobService {
         try {
             return Double.parseDouble(num);
         } catch (NumberFormatException e) {
-            return null;
+            return 0.0;
         }
     }
 
@@ -390,7 +382,11 @@ public class JobServiceImpl implements JobService {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                     return sdf.format(cell.getDateCellValue());
                 } else {
-                    return String.valueOf((long) cell.getNumericCellValue()).trim();
+                    try {
+                        return String.valueOf((long) cell.getNumericCellValue()).trim();
+                    } catch (Exception e) {
+                        return "0";
+                    }
                 }
             } else {
                 return cell.getStringCellValue().trim();
@@ -415,7 +411,7 @@ public class JobServiceImpl implements JobService {
             errors.rejectValue(fields[3].getName(), "ME037", errorMessage);
         }
 
-        if (errors.getFieldError("startDate") == null && errors.getFieldError("endDate") != null && !compareDate(request.getStartDate(), request.getEndDate())) {
+        if (errors.getFieldError("startDate") == null && errors.getFieldError("endDate") == null && !compareDate(request.getStartDate(), request.getEndDate())) {
             String errorMessage = messageSource.getMessage("ME018", null, Locale.getDefault());
             errors.rejectValue(fields[5].getName(), "ME018", errorMessage);
         }

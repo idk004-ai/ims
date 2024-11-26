@@ -17,7 +17,7 @@ public class LinkUtil {
     EmailPeriodRepository emailPeriodRepository;
 
      public static String generateLink(String uuid) {
-        String baseUrl = "/api/v1/user/reset-password/"; 
+        String baseUrl = "http://localhost:9090/api/v1/user/reset-password/"; 
         return baseUrl + uuid;
     }
 

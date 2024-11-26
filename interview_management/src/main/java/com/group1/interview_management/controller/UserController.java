@@ -5,8 +5,10 @@ import com.group1.interview_management.common.ConstantUtils;
 import com.group1.interview_management.common.LinkUtil;
 import com.group1.interview_management.common.RegexUtil;
 import com.group1.interview_management.common.validator.UserValidator;
+import com.group1.interview_management.dto.ApiResponse;
 import com.group1.interview_management.dto.UserContactDTO;
 import com.group1.interview_management.dto.UserDTO;
+import com.group1.interview_management.dto.UserResetPasswordRequest;
 import com.group1.interview_management.dto.UserSearchRequest;
 import com.group1.interview_management.dto.UserStatusRequest;
 import com.group1.interview_management.dto.UserUpdateRequestDTO;
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -62,28 +65,27 @@ public class UserController {
           return ResponseEntity.ok(userService.getUserByEmail(email));
      }
 
-     @PostMapping("/check-password")
-     public ResponseEntity<Map<String, Object>> validatePassword(@RequestParam("password") String password) {
-          boolean isValid = password.matches(RegexUtil.PASSWORD_REGEX);
-          Map<String, Object> response = new HashMap<>();
-          if (!isValid) {
-               response.put("message", messageSource.getMessage("password.invalid", null, Locale.getDefault()));
-               response.put("isValid", false);
-          } else {
-               response.put("message", "");
-               response.put("isValid", true);
+     @PostMapping("/reset-password")
+     public ResponseEntity<ApiResponse> resetPassword(@RequestBody UserResetPasswordRequest request) {
+          if (request.getNewPassword() == null || request.getConfirmPassword().isEmpty()) {
+               return ResponseEntity.badRequest()
+                         .contentType(MediaType.APPLICATION_JSON)
+                         .body(new ApiResponse(false, messageSource.getMessage("ME002.2", null, Locale.getDefault())));
           }
+          if (!request.getNewPassword().matches(RegexUtil.PASSWORD_REGEX)) {
+               return ResponseEntity.badRequest()
+                         .contentType(MediaType.APPLICATION_JSON)
+                         .body(new ApiResponse(false, messageSource.getMessage("ME007", null, Locale.getDefault())));
+          }
+          if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+               return ResponseEntity.badRequest()
+                         .contentType(MediaType.APPLICATION_JSON)
+                         .body(new ApiResponse(false, messageSource.getMessage("ME006", null, Locale.getDefault())));
+          }
+          userService.changePassword(request.getUuid(), request.getNewPassword());
 
-          return ResponseEntity.ok(response);
-     }
-
-     @PostMapping("/reset-password/reset-password")
-     public String resetPassword(@RequestParam("newPassword") String newPassword, String uuid,
-               RedirectAttributes redirectAttributes) {
-          userService.changePassword(uuid, newPassword);
-          String informMessage = messageSource.getMessage("reset.password", null, Locale.getDefault());
-          redirectAttributes.addFlashAttribute("message", informMessage);
-          return "redirect:/auth/login";
+          return ResponseEntity
+                    .ok(new ApiResponse(true, messageSource.getMessage("reset.password", null, Locale.getDefault())));
      }
 
      @GetMapping("/reset-password/{uuid}")
@@ -93,9 +95,7 @@ public class UserController {
                model.addAttribute("uuid", uuid);
                return "reset_password";
           } else {
-               String informMessage = messageSource.getMessage("ME004", null, Locale.getDefault());
-               redirectAttributes.addFlashAttribute("errorMessage", informMessage);
-               return "redirect:/auth/login";
+               return "auth/link_expired";
           }
      }
 
@@ -126,10 +126,10 @@ public class UserController {
      @GetMapping("/create-user")
      public String forwardCreateUser(Model model) {
           model.addAttribute("UserDTO", UserDTO.builder().build());
-          model.addAttribute("genders", masterService.findByCategory(ConstantUtils.GENDER));// gender
-          model.addAttribute("roles", masterService.findByCategory(ConstantUtils.USER_ROLE));// role
-          model.addAttribute("departments", masterService.findByCategory(ConstantUtils.DEPARTMENT));// department
-          model.addAttribute("statuses", masterService.getUserStatus(ConstantUtils.USER_STATUS));// status
+          model.addAttribute("genders", masterService.findByCategory(ConstantUtils.GENDER));
+          model.addAttribute("roles", masterService.findByCategory(ConstantUtils.USER_ROLE));
+          model.addAttribute("departments", masterService.findByCategory(ConstantUtils.DEPARTMENT));
+          model.addAttribute("statuses", masterService.getUserStatus(ConstantUtils.USER_STATUS));
           return "user/create_user";
      }
 
@@ -140,12 +140,13 @@ public class UserController {
           Map<String, String> errors = new HashMap<>();
           userValidator.validateEmail(userDTO, errors);
           userValidator.validatePhone(userDTO, errors);
+          userValidator.validateName(userDTO, errors);
           userValidator.validateDob(userDTO, errors);
           userValidator.checkRequiredFields(userDTO, errors);
           if (!errors.isEmpty()) {
                response.put("success", false);
                response.put("errors", errors);
-               return ResponseEntity.ok(response);
+               return ResponseEntity.badRequest().body(response);
           }
           userService.addUser(userDTO, session);
           response.put("success", true);
@@ -158,10 +159,10 @@ public class UserController {
      public String forwardEdit(@PathVariable int id, Model model) {
           UserDTO userDTO = userService.getUserById(id);
           model.addAttribute("UserDTO", userDTO);
-          model.addAttribute("genders", masterService.findByCategory(ConstantUtils.GENDER));// gender
-          model.addAttribute("roles", masterService.findByCategory(ConstantUtils.USER_ROLE));// role
-          model.addAttribute("departments", masterService.findByCategory(ConstantUtils.DEPARTMENT));// department
-          model.addAttribute("statuses", masterService.getUserStatus(ConstantUtils.USER_STATUS));// status
+          model.addAttribute("genders", masterService.findByCategory(ConstantUtils.GENDER));
+          model.addAttribute("roles", masterService.findByCategory(ConstantUtils.USER_ROLE));
+          model.addAttribute("departments", masterService.findByCategory(ConstantUtils.DEPARTMENT));
+          model.addAttribute("statuses", masterService.getUserStatus(ConstantUtils.USER_STATUS));
           return "user/edit_user";
      }
 
@@ -172,10 +173,11 @@ public class UserController {
           UserContactDTO userContactDTO = requestDTO.getUserContactDTO();
           Map<String, String> errors = new HashMap<>();
           userValidator.checkRequiredFields(userDTO, errors);
-          if (!userDTO.getEmail().equals(userContactDTO.getOriginalEmail())) {
+          userValidator.validateName(userDTO, errors);
+          if (!userDTO.getEmail().trim().equals(userContactDTO.getOriginalEmail())) {
                userValidator.validateEmail(userDTO, errors);
           }
-          if (!userDTO.getPhoneNo().equals(userContactDTO.getOriginalPhoneNo())) {
+          if (!userDTO.getPhoneNo().trim().equals(userContactDTO.getOriginalPhoneNo())) {
                userValidator.validatePhone(userDTO, errors);
           }
           userValidator.validateDob(userDTO, errors);

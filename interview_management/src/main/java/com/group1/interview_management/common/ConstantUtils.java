@@ -23,6 +23,9 @@ public class ConstantUtils {
     //Constants for user status
     public static final String USER_ACTIVE = "ACTIVE";
     public static final String USER_INACTIVE = "INACTIVE";
+    public static final String USER_GENDER_MALE_CATEGORY_ID = "1";
+    public static final String USER_GENDER_FEMALE_CATEGORY_ID = "2";
+    public static final String USER_GENDER_OTHER_CATEGORY_ID = "3";
     
     // Constants for candidate status
     public static final String STATUS_OPEN="Open";
@@ -68,6 +71,9 @@ public class ConstantUtils {
     public static final Integer INTERVIEW_RESULT_PASSED = 2;
     public static final Integer INTERVIEW_RESULT_FAILED = 3;
 
+    // Constants for offer
+    public static final Integer OFFER_STATUS_WAITING_FOR_APPROVAL = 1;
+
     // Constants for recruiter
     public static final String RECRUITER = "RECRUITER";
     // Constants for manager
@@ -84,8 +90,8 @@ public class ConstantUtils {
     //Constant for email subject
     public static final String PASSWORD_RESET = "Password Reset";
     public static final String INTERVIEW_SCHEDULE_REMINDER = "Interview Schedule Reminder";
+    public static final String INTERVIEW_CANCELLATION_NOTICE = "Interview Cancellation Notice";
     public static final String REMINDER_OFFER = "Offer Reminder";
-    public static final String INTERVIEW_CANCELLATION_NOTICE = "Interview Cancellation Notice"; 
     // Common Fields
     public static final String ERROR = "error";
 

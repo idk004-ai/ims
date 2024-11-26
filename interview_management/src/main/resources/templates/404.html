@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+     <meta charset="UTF-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>404 - Page Not Found</title>
+     <link rel="stylesheet" type="text/css" th:href="@{/static/user/css/page_not_found.css}" />
+     <style>
+          * {
+               margin: 0;
+               padding: 0;
+               box-sizing: border-box;
+          }
+
+          body {
+               font-family: Arial, sans-serif;
+               background-color: #f5f5f5;
+               min-height: 100vh;
+               display: flex;
+               flex-direction: column;
+               align-items: center;
+               justify-content: center;
+          }
+
+          .error-container {
+               text-align: center;
+               padding: 2rem;
+               max-width: 600px;
+          }
+
+          .error-code {
+               font-size: 120px;
+               font-weight: bold;
+               color: #e74c3c;
+               margin-bottom: 1rem;
+          }
+
+          .error-message {
+               font-size: 24px;
+               color: #2c3e50;
+               margin-bottom: 2rem;
+          }
+
+          .error-description {
+               color: #7f8c8d;
+               margin-bottom: 2rem;
+          }
+
+          .home-button {
+               display: inline-block;
+               padding: 12px 30px;
+               background-color: #3498db;
+               color: white;
+               text-decoration: none;
+               border-radius: 5px;
+               transition: background-color 0.3s ease;
+          }
+
+          .home-button:hover {
+               background-color: #2980b9;
+          }
+
+          .error-image {
+               width: 300px;
+               margin-bottom: 2rem;
+          }
+     </style>
+</head>
+
+<body>
+     <div class="error-container">
+          <img class="error-image" th:src="@{/static/assets/img/404.png}" alt="404 illustration" />
+          <div class="error-code">404</div>
+          <h1 class="error-message">Page Not Found</h1>
+          <p class="error-description">
+               Oops! The page you're looking for seems to have vanished into
+               thin air. Don't worry, you can always return to our homepage.
+          </p>
+          <a href="/api/v1/home" class="home-button">Back to Home</a>
+     </div>
+</body>
+
+</html>

@@ -1,6 +1,5 @@
 package com.group1.interview_management.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -47,8 +46,7 @@ public class SecurityConfig {
                "/webjars/**",
                "/swagger-ui.html"
      };
-     @Value("${app.domain}")
-     private String[] domains;
+     private final DomainConfig domainConfig;
 
      @Bean
      public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -62,8 +60,8 @@ public class SecurityConfig {
                               .authenticated())
                     .formLogin(login -> login
                               .loginPage("/auth/login")
-                              .defaultSuccessUrl(domains[0] + "/api/v1/home")
-                              .failureUrl(domains[0] + "/auth/login?error=true")
+                              .defaultSuccessUrl(domainConfig.domainUrl() + "/api/v1/home")
+                              .failureUrl(domainConfig.domainUrl() + "/auth/login?error=true")
                               .permitAll())
                     .sessionManagement(session -> session
                               .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

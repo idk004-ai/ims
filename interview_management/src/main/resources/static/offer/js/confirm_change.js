@@ -40,6 +40,51 @@ function handleOfferAction(id, action, title, content, successMessage) {
     });
 }
 
+// function handleOfferAction(id, action, title, content, successMessage) {
+//     $.confirm({
+//         title: title,
+//         content: content,
+//         buttons: {
+//             confirm: {
+//                 text: 'Yes',
+//                 btnClass: 'btn-danger',
+//                 action: function () {
+//                     $.ajax({
+//                         url: `/api/v1/offer/${action}/${id}`,
+//                         type: 'POST',
+//                         success: function (response) {
+//                             Swal.fire({
+//                                 title: 'Success',
+//                                 text: successMessage || response,
+//                                 icon: 'success',
+//                                 confirmButtonText: 'OK'
+//                             }).then(() => {
+//                                 location.reload(); // Reload lại trang nếu thành công
+//                             });
+//                         },
+//                         error: function (xhr) {
+//                             console.error(xhr);
+//                             let errorMessage = xhr.responseText || 'An error occurred. Please try again.';
+//                             Swal.fire({
+//                                 title: 'Error',
+//                                 text: errorMessage,
+//                                 icon: 'error',
+//                                 confirmButtonText: 'OK'
+//                             }).then(() => {
+//                                 location.reload(); // Reload lại trang nếu có lỗi
+//                             });
+//                         }
+//                     });
+//                 }
+//             },
+//             cancel: {
+//                 text: 'No',
+//                 btnClass: 'btn-secondary'
+//             }
+//         }
+//     });
+// }
+
 
 function rejectOffer(id) {
     handleOfferAction(id, 'reject', 'Confirm Reject', 'Are you sure you want to reject this offer?', 'Offer rejected successfully');

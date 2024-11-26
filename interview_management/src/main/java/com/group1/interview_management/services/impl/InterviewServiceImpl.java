@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,6 +25,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.data.domain.Pageable;
 import com.group1.interview_management.common.ConstantUtils;
 import com.group1.interview_management.common.EmailTemplateName;
+import com.group1.interview_management.config.DomainConfig;
 import com.group1.interview_management.dto.OfferCreateDTO;
 import com.group1.interview_management.entities.Interview;
 import com.group1.interview_management.dto.interview.InterviewDTO;
@@ -74,16 +74,7 @@ public class InterviewServiceImpl implements InterviewService {
      private final EmailService emailService;
      private final ScheduleValidationService scheduleValidationService;
      private final InterviewResultProcess resultProcessor;
-     @Value("${app.domain}")
-     private String[] domain;
-
-     private void validateUser(Authentication authenticatedUser) {
-          User user = (User) authenticatedUser.getPrincipal();
-          if (user == null) {
-               String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
-               throw new AccessDeniedException(err);
-          }
-     }
+     private final DomainConfig domainConfig;
 
      @Override
      public List<Interview> getAllInterview(LocalDate startDate, LocalDate endDate) {
@@ -93,7 +84,7 @@ public class InterviewServiceImpl implements InterviewService {
 
      @Override
      public Page<InterviewDTO> getAllInterview(InterviewFilterDTO filter, Authentication auth) {
-          validateUser(auth);
+          
           Pageable pageable = PageRequest.of(filter.getPage(), filter.getPageSize(),
                     Sort.by("createdDate").descending());
           Page<InterviewDTO> interviewPageDTO = interviewRepository.findAllByCondition(
@@ -112,8 +103,8 @@ public class InterviewServiceImpl implements InterviewService {
           List<OfferCreateDTO> list = new ArrayList<>();
 
           for (Interview interview : interviews) {
-               if (interview.getContractTypeId() == 0 || interview.getSalary() == 0
-                         || interview.getOfferdepartment() == 0) {
+               if ((interview.getContractTypeId() == 0 || interview.getSalary() == 0
+                         || interview.getOfferdepartment() == 0) && interview.getResultInterviewId() == 2) {
                     OfferCreateDTO listDTOs = new OfferCreateDTO();
                     listDTOs.setInterviewId(interview.getInterviewId());
                     listDTOs.setCandidateName(interview.getCandidate().getName());
@@ -137,7 +128,7 @@ public class InterviewServiceImpl implements InterviewService {
           return interviews.stream()
                     .filter(offer -> offer.getInterviewId().equals(id))
                     .findFirst()
-                    .orElse(null); // or throw an exception if preferred
+                    .orElse(null);
      }
 
      /**
@@ -439,7 +430,7 @@ public class InterviewServiceImpl implements InterviewService {
                props.put("scheduleDate", schedule);
                props.put("startTime", startTime);
                props.put("endTime", endTime);
-               props.put("interviewURL", domain[0] + "/api/v1/interview/view/" + id);
+               props.put("interviewURL", domainConfig.domainUrl() + "/api/v1/interview/view/" + id);
                props.put("jobTitle", interview.getJob().getTitle());
                props.put("location", interview.getLocation());
                props.put("meetingLink", interview.getMeetingId());

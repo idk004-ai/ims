@@ -7,13 +7,13 @@ import java.util.Map;
 import java.util.List;
 
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.group1.interview_management.common.ConstantUtils;
 import com.group1.interview_management.common.EmailTemplateName;
+import com.group1.interview_management.config.DomainConfig;
 import com.group1.interview_management.entities.Interview;
 import com.group1.interview_management.entities.InterviewAssignment;
 import com.group1.interview_management.entities.User;
@@ -35,8 +35,7 @@ public class InterviewScheduleReminder {
      private final InterviewRepository interviewRepository;
      private static final int REMINDER_DAYS_BEFORE = 3;
      private static final int MAX_RETRIES = 3;
-     @Value("${app.domain}")
-     private String[] domain;
+     private final DomainConfig domainConfig;
 
      private List<Interview> getUpcomingInterveiws(LocalDate startDate, LocalDate endDate) {
           return interviewService.getAllInterview(startDate, endDate);
@@ -104,7 +103,7 @@ public class InterviewScheduleReminder {
           props.put("daysUntilInterview", daysUntilInterview);
           props.put("location", interview.getLocation());
           props.put("meetingLink", interview.getMeetingId());
-          props.put("interviewURL", domain[0] + "/api/v1/interview/view/" + interview.getInterviewId());
+          props.put("interviewURL", domainConfig.domainUrl() + "/api/v1/interview/view/" + interview.getInterviewId());
           return props;
      }
 
@@ -124,7 +123,6 @@ public class InterviewScheduleReminder {
                return false;
           }
      }
-
      @Retryable(value = MessagingException.class, maxAttempts = MAX_RETRIES, backoff = @Backoff(delay = 1000))
      private void retrySendMail(String subject, String recipientEmail, EmailTemplateName templateName, Map<String, Object> props)
                throws MessagingException {

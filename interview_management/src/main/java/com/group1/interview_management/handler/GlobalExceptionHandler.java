@@ -4,10 +4,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.group1.interview_management.dto.interview.CreateInterviewDTO;
@@ -21,6 +23,7 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 import java.util.Locale;
+import java.util.NoSuchElementException;
 
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
@@ -102,6 +105,13 @@ public class GlobalExceptionHandler {
                     .body(exp.getAllErrors());
      }
 
+     @ExceptionHandler(NoSuchElementException.class) 
+     public ModelAndView handleNoSuchElementException(NoSuchElementException exp) {
+          ModelAndView modelAndView = new ModelAndView();
+          modelAndView.setViewName("404");
+          return modelAndView;
+     }
+
      @ExceptionHandler(Exception.class)
      public ResponseEntity<?> handleException(Exception exp) {
           exp.printStackTrace();
@@ -112,6 +122,13 @@ public class GlobalExceptionHandler {
                                         .businessErrorDescription("Internal error, please contact the admin")
                                         .error(exp.getMessage())
                                         .build());
+     }
+
+     @ExceptionHandler(AuthorizationDeniedException.class)
+     public ModelAndView handleAuthorizationDeniedException() {
+          ModelAndView modelAndView = new ModelAndView();
+          modelAndView.setViewName("auth/access_denied");
+          return modelAndView;
      }
 
 }
