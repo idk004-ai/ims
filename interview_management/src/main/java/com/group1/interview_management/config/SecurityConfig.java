@@ -46,7 +46,6 @@ public class SecurityConfig {
                "/webjars/**",
                "/swagger-ui.html"
      };
-     private final DomainConfig domainConfig;
 
      @Bean
      public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -60,8 +59,6 @@ public class SecurityConfig {
                               .authenticated())
                     .formLogin(login -> login
                               .loginPage("/auth/login")
-                              .defaultSuccessUrl(domainConfig.domainUrl() + "/api/v1/home")
-                              .failureUrl(domainConfig.domainUrl() + "/auth/login?error=true")
                               .permitAll())
                     .sessionManagement(session -> session
                               .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

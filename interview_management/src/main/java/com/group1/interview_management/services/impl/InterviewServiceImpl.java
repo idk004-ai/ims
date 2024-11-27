@@ -25,7 +25,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.data.domain.Pageable;
 import com.group1.interview_management.common.ConstantUtils;
 import com.group1.interview_management.common.EmailTemplateName;
-import com.group1.interview_management.config.DomainConfig;
 import com.group1.interview_management.dto.OfferCreateDTO;
 import com.group1.interview_management.entities.Interview;
 import com.group1.interview_management.dto.interview.InterviewDTO;
@@ -74,7 +73,6 @@ public class InterviewServiceImpl implements InterviewService {
      private final EmailService emailService;
      private final ScheduleValidationService scheduleValidationService;
      private final InterviewResultProcess resultProcessor;
-     private final DomainConfig domainConfig;
 
      @Override
      public List<Interview> getAllInterview(LocalDate startDate, LocalDate endDate) {
@@ -430,7 +428,7 @@ public class InterviewServiceImpl implements InterviewService {
                props.put("scheduleDate", schedule);
                props.put("startTime", startTime);
                props.put("endTime", endTime);
-               props.put("interviewURL", domainConfig.domainUrl() + "/api/v1/interview/view/" + id);
+               props.put("interviewURL", "/api/v1/interview/view/" + id);
                props.put("jobTitle", interview.getJob().getTitle());
                props.put("location", interview.getLocation());
                props.put("meetingLink", interview.getMeetingId());

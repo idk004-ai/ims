@@ -9,7 +9,6 @@ import com.group1.interview_management.common.EmailTemplateName;
 import com.group1.interview_management.common.JwtName;
 import com.group1.interview_management.common.JwtTokenUtils;
 import com.group1.interview_management.common.LinkUtil;
-import com.group1.interview_management.config.DomainConfig;
 import com.group1.interview_management.dto.JwtTokenDTO;
 import com.group1.interview_management.dto.LoginDTO;
 import com.group1.interview_management.dto.RegistrationDTO;
@@ -74,7 +73,6 @@ public class AuthenticationController {
     private Integer jwtExpiration;
     @Value("${jwt.refresh-token.expiration}")
     private Integer refreshExpiration;
-    private final DomainConfig domainConfig;
 
     @GetMapping("/login")
     public String showLoginPage(HttpServletRequest request, Model model) {
@@ -107,7 +105,7 @@ public class AuthenticationController {
 
             // Set JWT token in cookie
             jwtService.setTokenInsideCookie(response, jwtToken);
-            String defaultRedirectUrl = domainConfig.domainUrl() + "/api/v1/home";
+            String defaultRedirectUrl ="/api/v1/home";
 
             String acceptHeader = request.getHeader("Accept");
             boolean isApiRequest = acceptHeader != null && acceptHeader.contains("application/json");

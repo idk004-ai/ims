@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import com.group1.interview_management.common.ConstantUtils;
 import com.group1.interview_management.common.EmailTemplateName;
-import com.group1.interview_management.config.DomainConfig;
 import com.group1.interview_management.entities.Interview;
 import com.group1.interview_management.entities.InterviewAssignment;
 import com.group1.interview_management.entities.User;
@@ -35,7 +34,6 @@ public class InterviewScheduleReminder {
      private final InterviewRepository interviewRepository;
      private static final int REMINDER_DAYS_BEFORE = 3;
      private static final int MAX_RETRIES = 3;
-     private final DomainConfig domainConfig;
 
      private List<Interview> getUpcomingInterveiws(LocalDate startDate, LocalDate endDate) {
           return interviewService.getAllInterview(startDate, endDate);
@@ -103,7 +101,7 @@ public class InterviewScheduleReminder {
           props.put("daysUntilInterview", daysUntilInterview);
           props.put("location", interview.getLocation());
           props.put("meetingLink", interview.getMeetingId());
-          props.put("interviewURL", domainConfig.domainUrl() + "/api/v1/interview/view/" + interview.getInterviewId());
+          props.put("interviewURL", "/api/v1/interview/view/" + interview.getInterviewId());
           return props;
      }
 

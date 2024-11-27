@@ -21,8 +21,7 @@ import com.group1.interview_management.repositories.EmailTokenRepository;
 import com.group1.interview_management.repositories.MasterRepository;
 import com.group1.interview_management.repositories.UserRepository;
 
-import io.jsonwebtoken.ExpiredJwtException;
-
+import lombok.extern.slf4j.Slf4j;
 import com.group1.interview_management.common.EmailTemplateName;
 import com.group1.interview_management.common.JwtName;
 import com.group1.interview_management.common.JwtTokenUtils;
@@ -38,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
+@Slf4j
 public class AuthenticationService implements LogoutHandler {
 
      private UserRepository userRepository;
@@ -116,13 +116,12 @@ public class AuthenticationService implements LogoutHandler {
           props.put("username", user.getUsername());
           props.put("activationCode", newToken);
           emailService.sendMail(
-               "Account activation",
-               "minhkhoilenhat04@gmail.com",
-               user.getEmail(),
-               EmailTemplateName.ACTIVATE_ACCOUNT,
-               props,
-               false
-          );
+                    "Account activation",
+                    "minhkhoilenhat04@gmail.com",
+                    user.getEmail(),
+                    EmailTemplateName.ACTIVATE_ACCOUNT,
+                    props,
+                    false);
      }
 
      private String generateAndSaveActivationToken(User user) {
@@ -189,26 +188,39 @@ public class AuthenticationService implements LogoutHandler {
 
      @Override
      public void logout(HttpServletRequest request, HttpServletResponse response, Authentication connectedUser) {
-          final String refreshToken = JwtTokenUtils.extractTokenFromCookie(request, JwtName.REFRESH_TOKEN.getValue());
-          User user = userRepository.findByRefreshToken(refreshToken).orElseThrow(() -> {
-               String errorMessage = messageSource.getMessage("jwttoken.notfound", null, Locale.getDefault());
-               return new ExpiredJwtException(null, null, errorMessage);
-          });
-          user.setRefreshToken(null);
-          userRepository.save(user);
+          try {
+               // Try to invalidate the refresh token in database
+               final String refreshToken = JwtTokenUtils.extractTokenFromCookie(request,
+                         JwtName.REFRESH_TOKEN.getValue());
+               if (refreshToken != null) {
+                    Optional<User> userOpt = userRepository.findByRefreshToken(refreshToken);
+                    userOpt.ifPresent(user -> {
+                         user.setRefreshToken(null);
+                         userRepository.save(user);
+                    });
+               }
+          } catch (Exception ex) {
+               // Log the error but continue with logout process
+               log.warn("Error while invalidating refresh token during logout: {}", ex.getMessage());
+          } finally {
+               // Always clear cookies and security context regardless of database operation
+               // Clear access token cookie
+               Cookie accessCookie = new Cookie(JwtName.ACCESS_TOKEN.getValue(), null);
+               accessCookie.setPath("/");
+               accessCookie.setHttpOnly(true);
+               accessCookie.setMaxAge(0);
+               response.addCookie(accessCookie);
 
-          Cookie accessCookie = new Cookie(JwtName.ACCESS_TOKEN.getValue(), null);
-          accessCookie.setPath("/");
-          accessCookie.setHttpOnly(true);
-          accessCookie.setMaxAge(0);
-          response.addCookie(accessCookie);
+               // Clear refresh token cookie
+               Cookie refreshTokenCookie = new Cookie(JwtName.REFRESH_TOKEN.getValue(), null);
+               refreshTokenCookie.setPath("/");
+               refreshTokenCookie.setHttpOnly(true);
+               refreshTokenCookie.setMaxAge(0);
+               response.addCookie(refreshTokenCookie);
 
-          Cookie refreshTokenCookie = new Cookie(JwtName.REFRESH_TOKEN.getValue(), null);
-          refreshTokenCookie.setPath("/");
-          refreshTokenCookie.setHttpOnly(true);
-          refreshTokenCookie.setMaxAge(0);
-          response.addCookie(refreshTokenCookie);
-
-          SecurityContextHolder.clearContext();
+               // Clear security context
+               SecurityContextHolder.clearContext();
+          }
      }
+
 }

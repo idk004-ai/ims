@@ -18,28 +18,25 @@ document.addEventListener('DOMContentLoaded', function () {
           const { username } = data || {};
           const authButton = document.getElementById("auth-button");
           const usernameElement = document.getElementById("username");
-          const personIcon = document.querySelector(".person");
 
           usernameElement.textContent = !username ? "Guest" : username;
           authButton.textContent = !username ? "Login" : "Logout";
 
           authButton.onclick = !username
                ? () => (window.location.href = "/api/v1/auth/login")
-               : () => {
-                    authButton.classList.add("clicked");
-                    personIcon.classList.remove("drop");
-
-                    setTimeout(() => {
-                         personIcon.classList.add("drop");
-                         setTimeout(() => {
-                              logout();
-                         }, 1000);
-                    }, 600);
-               };
+               : () => logout();
      }
 
      function logout() {
-          window.location.href = "/api/v1/auth/login";
+          initApi().then((api) => {
+               api.post("/auth/logout")
+                    .then((response) => {
+                         window.location.reload();
+                    })
+                    .catch((err) => {
+                         console.log(err);
+                    });
+          });
      }
 
      initApi().then((api) => {
