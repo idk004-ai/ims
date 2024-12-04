@@ -39,8 +39,10 @@ const uploadExcelFile = () => {
                 document.getElementById("successModal").style.display = "block";
             } else {
                 if (result.code === 422) {
+                    console.log("list loi")
                     showErrorModal(result.result, result.code);
                 } else {
+                    console.log("1 loi")
                     showErrorModal(result.message, result.code)
                 }
             }
@@ -58,25 +60,17 @@ function hideFailModal() {
 function showErrorModal(errors, code) {
     const errorModal = document.getElementById("errorModal-fail");
     const errorList = document.getElementById("errorList-fail");
+    const error = document.getElementById("error-file");
     errorModal.style.display = "flex";
     errorList.innerHTML = "";
     if (code !== 422) {
+        errorList.style.display = "block";
         errorList.textContent = errors;
-        document.getElementById("error-file").style.display="none";
-        return;
+        error.style.display = "none";
+    } else {
+        error.style.display = "block";
+        errorList.style.display = "none";
     }
-
-    // for (const [index, errors1] of Object.entries(errors)) {
-    //     // Tạo chuỗi lỗi từ danh sách errors
-    //     const errorMessages = errors1.map(error => error.defaultMessage).join(", ");
-    //     errors1.map(error => {
-    //         const li = document.createElement("li");
-    //         li.textContent = `Row ${index}, ${formatString(error.field)} : ${error.defaultMessage}`;
-    //         errorList.appendChild(li);
-    //     });
-    //
-    // }
-    errorList.style.display="none";
 }
 
 function formatString(input) {
@@ -90,7 +84,7 @@ function closeErrorModal() {
     document.getElementById("errorModal-fail").style.display = "none";
 }
 
-function exportErrors(){
+function exportErrors() {
     const url = `/api/v1/jobs/export-errors`;
 
     fetch(url)
@@ -106,6 +100,7 @@ function exportErrors(){
             alert("doe co")
         });
 }
-function clearInput(){
-    document.getElementById("fileInput").value="";
+
+function clearInput() {
+    document.getElementById("fileInput").value = "";
 }

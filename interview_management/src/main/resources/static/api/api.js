@@ -6,20 +6,23 @@ let failedQueue = [];
 const maxRetries = 5;
 
 const processQueue = (error = null) => {
-     failedQueue.forEach(promise => {
+     const queue = [...failedQueue];
+     failedQueue = [];
+
+     queue.forEach(promise => {
           if (error) {
                promise.reject(error);
           } else {
                promise.resolve();
           }
      });
-     failedQueue = [];
 };
 
-const refreshToken = () => {
+const refreshToken = async () => {
      $.ajax({
           url: API_BASE_URL + '/auth/refresh-token',
           method: 'GET',
+          timeout: 5000,
           xhrFields: {
                withCredentials: true
           }
@@ -32,11 +35,13 @@ const refreshToken = () => {
 };
 
 
-const getNewToken = () => {
+const getNewToken = async () => {
      if (!isRefreshing) {
           isRefreshing = true;
           try {
-               refreshToken();
+               await refreshToken();
+          } catch (error) {
+               throw error;
           } finally {
                isRefreshing = false;
           }
@@ -73,7 +78,7 @@ const initApi = () => {
                     method: 'GET',
                     data: data
                }).catch((error) => {
-                    return handleError(error, { method: 'GET', url: '/api/v1' + url, data });
+                    return handleError(error, { method: 'GET', url: API_BASE_URL + url, data });
                });
           };
 
@@ -83,32 +88,34 @@ const initApi = () => {
                     method: 'POST',
                     data: JSON.stringify(data)
                }).catch((error) => {
-                    return handleError(error, { method: 'POST', url: '/api/v1' + url, data });
+                    return handleError(error, { method: 'POST', url: API_BASE_URL + url, data });
                });
           };
 
           function handleError(error, originalRequest, retryCount = 0) {
-               const shouldRenewToken = (error.status === 401) && retryCount < maxRetries;
-               if (shouldRenewToken) {
-                    try {
-                         getNewToken();
-                         return $.ajax({
-                              url: originalRequest.url,
-                              method: originalRequest.method,
-                              data: JSON.stringify(originalRequest.data)
-                         }).catch(error => {
-                              return handleError(error, originalRequest, retryCount + 1);
+               const isTokenExpiredError = error.status === 401;
+               if (isTokenExpiredError && retryCount < maxRetries) {
+                    return getNewToken()
+                         .then(() => {
+                              return $.ajax({
+                                   url: originalRequest.url,
+                                   method: originalRequest.method,
+                                   data: originalRequest.data ? JSON.stringify(originalRequest.data) : undefined
+                              });
+                         })
+                         .catch(error => {
+                              if (error.status === 401) {
+                                   return handleError(error, originalRequest, retryCount + 1);
+                              }
+                              return Promise.reject(error);
                          });
-                    } catch (error1) {
-                         return Promise.reject(error1);
-                    }
-               } else {
-                    if (retryCount >= maxRetries) {
-                         logout();
-                    } else {
-                         return Promise.reject(error);
-                    }
                }
+               if (retryCount >= maxRetries) {
+                    window.dispatchEvent(new CustomEvent('session-expired'));
+                    logout();
+                    return Promise.reject(new Error('Max retry attemps reached'));
+               }
+               return Promise.reject(error);
           }
 
           window.api = api;
@@ -117,5 +124,12 @@ const initApi = () => {
      });
 };
 
+const cleanup = () => {
+     failedQueue = [];
+     isRefreshing = false;
+};
+
+window.addEventListener('session-expired', cleanup);
+window.addEventListener('logout', cleanup);
 
 window.initApi = initApi;

@@ -31,7 +31,7 @@ public interface OfferRepository extends JpaRepository<Interview, Integer> {
                     LOWER(i.offerNote) LIKE LOWER(CONCAT('%', :keyword, '%')))
                 AND (:status IS NULL OR s.categoryId = :status)
                 AND (:department IS NULL OR d.categoryId = :department)
-                ORDER BY c.modifiedDate DESC
+                ORDER BY i.modifiedDate DESC
             """)
     Page<OfferDTO> searchByKeyword(
             @Param("keyword") String query,

@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import com.group1.interview_management.dto.interview.InterviewDTO;
 import com.group1.interview_management.dto.interview.InterviewFilterDTO;
 import com.group1.interview_management.entities.Interview;
+import com.group1.interview_management.entities.User;
 
 import jakarta.mail.MessagingException;
 
@@ -19,9 +20,7 @@ import com.group1.interview_management.dto.interview.CreateInterviewDTO;
 import com.group1.interview_management.dto.interview.EditInterviewDTO;
 
 public interface InterviewService {
-     // PageDTO<InterviewDTO> getAllInterview(InterviewFilterDTO status, Authentication authenticatedUser);
 
-     // public List<OfferCreateDTO> getinterview();
      public List<OfferCreateDTO> getinterviewnulloffer();
 
      OfferCreateDTO getinterviewByID(Integer id);
@@ -33,9 +32,9 @@ public interface InterviewService {
 
      EditInterviewDTO getInterviewDisplayableInfo(Integer id);
 
-     InterviewDTO submitResult(Integer id, EditInterviewDTO submitInterviewDTO, Authentication authenticatedUser, BindingResult errors, boolean mandatory) throws BindException;
+     InterviewDTO submitResult(Integer id, EditInterviewDTO submitInterviewDTO, User authenticatedUser, BindingResult errors, boolean mandatory) throws BindException;
 
-     InterviewDTO editInterview(Integer id, EditInterviewDTO editInterviewDTO, Authentication authenticatedUser, BindingResult errors) throws BindException;
+     InterviewDTO editInterview(Integer id, EditInterviewDTO editInterviewDTO, User authenticatedUser, BindingResult errors) throws BindException;
 
      InterviewDTO cancelInterview(Integer id, Authentication authenticatedUser) throws Exception;
 

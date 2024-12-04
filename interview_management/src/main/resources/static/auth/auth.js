@@ -23,6 +23,7 @@ $(document).ready(function () {
                 email: email,
                 password: password
             }).then((response) => {
+                console.log(response);
                 if (response.success) {
                     window.location.href = response.redirectUrl;
                 }

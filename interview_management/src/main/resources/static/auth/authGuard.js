@@ -14,14 +14,14 @@ function waitForUserData() {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+
      function updateUserInfo(data) {
-          const { username } = data || {};
+          const { username } = data;
           const authButton = document.getElementById("auth-button");
           const usernameElement = document.getElementById("username");
 
           usernameElement.textContent = !username ? "Guest" : username;
           authButton.textContent = !username ? "Login" : "Logout";
-
           authButton.onclick = !username
                ? () => (window.location.href = "/api/v1/auth/login")
                : () => logout();
@@ -41,15 +41,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
      initApi().then((api) => {
           api.get("/profile")
-               .then((response) => {
+               .then(response => {
                     me = response;
                     updateUserInfo(response);
                })
-               .catch((err) => {
+               .catch(err => {
                     me = null;
                     updateUserInfo(null);
                });
      });
+
 });
-
-

@@ -3,8 +3,6 @@ function searchOffers(page) {
     var statusQuery = $('#status').val().trim();
     var departmentQuery = $('#department').val();
 
-    console.log(departmentQuery)
-
 
     $.ajax({
         type: 'POST', // Chuyển thành phương thức POST

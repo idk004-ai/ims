@@ -6,6 +6,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.group1.interview_management.common.JwtName;
 import com.group1.interview_management.common.JwtTokenUtils;
+import com.group1.interview_management.services.CacheRequestService;
 import com.group1.interview_management.services.impl.JwtService;
 
 import jakarta.servlet.FilterChain;
@@ -21,7 +22,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-// import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +34,7 @@ public class JwtFilterConfig extends OncePerRequestFilter {
 
      private final JwtService jwtService;
      private final UserDetailsService userDetailsService;
-     // private final RequestCache requestCache;
+     private final CacheRequestService cacheRequestService;
      private final List<String> publicPaths = Arrays.asList(
                "/auth",
                "/static",
@@ -59,9 +59,9 @@ public class JwtFilterConfig extends OncePerRequestFilter {
           final String jwt = JwtTokenUtils.extractTokenFromCookie(request, JwtName.ACCESS_TOKEN.getValue());
           if (jwt == null) {
                // save the request
-               // if (!request.getRequestURI().startsWith("/auth")) {
-               //      requestCache.saveRequest(request, response);
-               // }
+               if (!request.getRequestURI().contains("/auth")) {
+                    cacheRequestService.cacheRequest(request.getSession().getId(), request.getRequestURI());
+               }
                filterChain.doFilter(request, response);
                return;
           }

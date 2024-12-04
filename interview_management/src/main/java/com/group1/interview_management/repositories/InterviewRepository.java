@@ -107,17 +107,6 @@ public interface InterviewRepository extends JpaRepository<Interview, Integer> {
      int countInterviewsByCandidateId(@Param("candidateId") Integer candidateId,
                @Param("interviewStatuses") List<Integer> interviewStatuses);
 
-     @Query("""
-               SELECT COUNT(i)
-               FROM Interview i
-               JOIN i.interviewAssignments ia
-               WHERE ia.interviewer.id = :interviewerId
-               AND i.schedule = :date
-               AND i.statusInterviewId NOT IN (:interviewStatuses)
-               """)
-     int countInterviewsByDaysAndInterviewerId(@Param("interviewerId") Integer interviewerId,
-               @Param("date") LocalDate date, @Param("interviewStatuses") List<Integer> interviewStatuses);
-
      /**
       * Find interviews that a candidate has and the status is not closed
       * 
@@ -179,5 +168,15 @@ public interface InterviewRepository extends JpaRepository<Interview, Integer> {
                           """)
      List<Interview> findByScheduleLessThanAndStatusInterviewIdNotIn(@Param("date") LocalDate currentDate,
                @Param("excludedStatuses") List<Integer> excludedStatuses);
+
+     @Query("""
+               SELECT i FROM Interview i
+               LEFT JOIN FETCH i.interviewAssignments ia
+               LEFT JOIN FETCH ia.interviewer
+               LEFT JOIN FETCH i.candidate
+               LEFT JOIN FETCH i.job
+               WHERE i.statusInterviewId NOT IN (:excludedStatuses)
+               """)
+     List<Interview> findByStatusNotIn(List<Integer> excludedStatuses);
 
 }

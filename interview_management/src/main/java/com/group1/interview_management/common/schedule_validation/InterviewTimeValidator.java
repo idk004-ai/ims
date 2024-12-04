@@ -37,6 +37,16 @@ public class InterviewTimeValidator implements ConstraintValidator<ValidIntervie
                return false;
           }
 
+          // check if startTime is not in the past
+          if (schedule.isEqual(LocalDate.now()) && (startTime.isBefore(LocalTime.now()) || endTime.isBefore(LocalTime.now()))) {
+               context.disableDefaultConstraintViolation();
+               error = messageSource.getMessage("ME022.5", null, Locale.getDefault());
+               context.buildConstraintViolationWithTemplate(error)
+                         .addPropertyNode("startTime")
+                         .addConstraintViolation();
+               return false;
+          }
+
           // Check if startTime is before endTime
           if (startTime.isAfter(endTime) || startTime.equals(endTime)) {
                context.disableDefaultConstraintViolation();

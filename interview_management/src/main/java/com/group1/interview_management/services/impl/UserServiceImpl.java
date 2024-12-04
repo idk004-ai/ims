@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
      private final PasswordEncoder passwordEncoder;
      private final EmailService emailService;
      private final MasterRepository masterRepository;
+     private final InterviewIntermediaryServiceImpl interviewService;
 
      @Override
      public List<UserDTO> getAllUsers(int pageNo, int pageSize) {
@@ -128,6 +129,9 @@ public class UserServiceImpl implements UserService {
 
      @Override
      public UserDTO updateUser(UserDTO userDTO) {
+          if (userDTO.getStatus().equals(ConstantUtils.USER_INACTIVE)) {
+               interviewService.cancelInterviews(User.class);
+          }
           User user = userRepository.findById(userDTO.getId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
           user.setFullname(userDTO.getFullname());
@@ -148,6 +152,9 @@ public class UserServiceImpl implements UserService {
      @Override
      public void changeStatus(int userId, String status) {
           User user = userRepository.findById(userId).get();
+          if (status.equals(ConstantUtils.USER_INACTIVE)) {
+               interviewService.cancelInterviews(User.class);
+          }
           Master master = masterRepository.findByCategoryAndCategoryValue(ConstantUtils.USER_STATUS, status).get();
           user.setStatus(master.getCategoryId());
           userRepository.save(user);

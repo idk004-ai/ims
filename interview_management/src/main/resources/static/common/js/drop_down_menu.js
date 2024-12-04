@@ -3,7 +3,13 @@ function fillOutDropDownMenu(url, dropDownMenuId, urlParam = null, callback) {
      initApi().then(api => {
           api.get(url).then(data => {
                const selectElement = document.getElementById(dropDownMenuId);
-               // selectElement.innerHTML = '';
+               selectElement.innerHTML = '';
+
+               // Add default "All" option
+               const defaultOption = document.createElement('option');
+               defaultOption.value = '';
+               defaultOption.textContent = 'All';
+               selectElement.appendChild(defaultOption);
 
                data.forEach(record => {
                     const option = document.createElement('option');
@@ -18,6 +24,20 @@ function fillOutDropDownMenu(url, dropDownMenuId, urlParam = null, callback) {
                          selectElement.value = selectedValue;
                     }
                }
+
+               selectElement.addEventListener('change', function () {
+                    const params = new URLSearchParams(window.location.search);
+                    if (this.value === '') {
+                         params.delete(urlParam);
+                    } else {
+                         params.set(urlParam, this.value);
+                    }
+
+                    const newUrl = window.location.pathname +
+                         (params.toString() ? '?' + params.toString() : '');
+                    window.history.pushState({}, '', newUrl);
+                    loadPage(0);
+               })
           });
      })
 }

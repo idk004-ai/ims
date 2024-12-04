@@ -10,6 +10,7 @@ import com.group1.interview_management.dto.job.JobListInterviewDTO;
 import com.group1.interview_management.entities.Job;
 import com.group1.interview_management.mapper.JobMapper;
 import com.group1.interview_management.repositories.JobRepository;
+import com.group1.interview_management.services.InterviewIntermediaryService;
 import com.group1.interview_management.services.JobService;
 import com.group1.interview_management.services.MasterService;
 import jakarta.validation.ConstraintViolation;
@@ -20,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.formula.functions.T;
 import org.apache.poi.ss.usermodel.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.MessageSource;
@@ -32,9 +32,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
@@ -52,10 +50,11 @@ public class JobServiceImpl implements JobService {
     JobRepository jobRepository;
     JobMapper jobMapper;
     MasterService masterService;
-    BatchJob batchJob;
     MessageSource messageSource;
     ModelMapper mapper;
     Validator validator;
+    BatchJob batchJob;
+    InterviewIntermediaryService interviewService;
 
     @NonFinal
     Map<Integer, BindingResult> errorMapJob;
@@ -96,9 +95,9 @@ public class JobServiceImpl implements JobService {
             job.updateCreatedDate(j.getCreatedDate());
             if (!compareDate(job.getStartDate(), LocalDate.now())) {
                 job.setStatusJobId(1);
-            }else if (!compareDate(job.getEndDate(), LocalDate.now())) {
+            } else if (!compareDate(job.getEndDate(), LocalDate.now())) {
                 job.setStatusJobId(2);
-            }else {
+            } else {
                 job.setStatusJobId(3);
             }
         }
@@ -120,18 +119,28 @@ public class JobServiceImpl implements JobService {
 
         Pageable pageable = PageRequest.of(request.getPage(), request.getPageSize());
         // get list jobs
-        Page<JobSearchResponse> jobPage = jobRepository.searchByKeyword(request.getQuery(), request.getStatus(),
-                pageable,
-                ConstantUtils.JOB_STATUS);
+        Page<JobSearchResponse> jobPage = searchJobs(request, pageable);
 
         List<JobSearchResponse> modifiedList = jobPage.stream()
-                //Change String id to String value
-                .peek(job -> job.setSkills(masterService.getListCategoryValue(job.getSkills(), ConstantUtils.SKILLS)))
-                .peek(job -> job.setLevel(masterService.getListCategoryValue(job.getLevel(), ConstantUtils.SKILLS)))
                 .collect(Collectors.toList());
 
         // Return new Page with list changed
         return new PageImpl<>(modifiedList, pageable, jobPage.getTotalElements());
+    }
+
+    public Page<JobSearchResponse> searchJobs(SearchJob request, Pageable pageable) {
+        Page<Object[]> results = jobRepository.searchByKeyword(request.getQuery(), request.getStatus(),
+                pageable, ConstantUtils.SKILLS, ConstantUtils.LEVEL, ConstantUtils.JOB_STATUS);
+
+        return results.map(row -> new JobSearchResponse(
+                (Integer) row[0],
+                (String) row[1],
+                ((java.sql.Date) row[2]).toLocalDate(),
+                ((java.sql.Date) row[3]).toLocalDate(),
+                (String) row[4],
+                (String) row[5],
+                (String) row[6]
+        ));
     }
 
     //Change from List<String> to String for job(skills, benefits, levels)
@@ -174,6 +183,7 @@ public class JobServiceImpl implements JobService {
     public void changeStatusJob() {
         jobRepository.openJob(LocalDate.now());
         jobRepository.closeJob(LocalDate.now());
+        interviewService.cancelInterviews(Job.class);
     }
 
     // Delete Job
@@ -181,16 +191,13 @@ public class JobServiceImpl implements JobService {
         Job job = jobRepository.getJobByJobId(jobId);
         job.setDeleteFlag(true);
         jobRepository.save(job);
+        interviewService.cancelInterviews(Job.class);
     }
 
     //Handle excel
     public ApiResponse<?> handleExcel(@Valid Workbook workbook) {
         try {
-            int numberOfSheets = workbook.getNumberOfSheets();
-            // code 400 wrong format file excel 1 sheet
-            if (numberOfSheets != 1) {
-                return buildResponse(400, "ME044", null);
-            }
+
             Sheet sheet = workbook.getSheetAt(0);
             Row firstRow = sheet.getRow(0);
 
@@ -309,6 +316,7 @@ public class JobServiceImpl implements JobService {
                             .workingAddress(workAddress)
                             .level(level1)
                             .description(description)
+                            .deleteFlag(false)
                             .statusJobId(1)
                             .build());
                 }
@@ -319,7 +327,7 @@ public class JobServiceImpl implements JobService {
                 return buildResponse(422, "ME015", "errorMap");
             }
             // code 200 If there is no error, then save and return message
-//            batchJob.saveJobsInBatch(jobs);
+            batchJob.saveJobsInBatch(jobs);
             return buildResponse(200, "ME016", jobs);
             //  code 500 error server
         } catch (NullPointerException n) {

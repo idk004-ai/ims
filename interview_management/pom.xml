@@ -134,12 +134,16 @@
 			<artifactId>xmlbeans</artifactId>
 			<version>5.1.1</version>
 		</dependency>
-
+		<!-- Retry -->
 		<dependency>
 			<groupId>org.springframework.retry</groupId>
 			<artifactId>spring-retry</artifactId>
 		</dependency>
-
+		<!-- Caching -->
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+		</dependency>
 	</dependencies>
 
 	<build>

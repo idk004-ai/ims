@@ -39,14 +39,14 @@
                     <button type="button" class="btn btn-danger mr-2"
                         th:onclick="'rejectOffer(' + ${offer.InterviewId} + ')'">Reject</button>
                     <button type="button" class="btn btn-warning mr-2"
-                        th:onclick="'openCancelConfirmationModal(' + ${offer.InterviewId} + ')'">Cancel Offer</button>
+                        th:onclick="'cancelOffer(' + ${offer.InterviewId} + ')'">Cancel Offer</button>
                 </div>
 
                 <div class="col-md-12 d-flex justify-content-end" th:if="${isNotEnterview && offer.status == 2}">
                     <button type="button" class="btn btn-light-blue mr-2"
                         th:onclick="'sentOffer(' + ${offer.InterviewId} + ')'">Mark as Sent to Candidate</button>
                     <button type="button" class="btn btn-warning mr-2"
-                        th:onclick="'openCancelConfirmationModal(' + ${offer.InterviewId} + ')'">Cancel Offer</button>
+                        th:onclick="'cancelOffer(' + ${offer.InterviewId} + ')'">Cancel Offer</button>
                 </div>
 
                 <div class="col-md-12 d-flex justify-content-end">
@@ -56,14 +56,14 @@
                         <button type="button" class="btn btn-light-pink mr-2"
                             th:onclick="'declinedOffer(' + ${offer.InterviewId} + ')'">Declined Offer</button>
                         <button type="button" class="btn btn-warning mr-2"
-                            th:onclick="'openCancelConfirmationModal(' + ${offer.InterviewId} + ')'">Cancel
+                            th:onclick="'cancelOffer(' + ${offer.InterviewId} + ')'">Cancel
                             Offer</button>
                     </div>
                 </div>
                 <div class="col-md-12 d-flex justify-content-end">
                     <div th:if="${isNotEnterview && offer.status == 5}">
                         <button type="button" class="btn btn-warning mr-2"
-                            th:onclick="'openCancelConfirmationModal(' + ${offer.InterviewId} + ')'">Cancel
+                            th:onclick="'cancelOffer(' + ${offer.InterviewId} + ')'">Cancel
                             Offer</button>
                     </div>
                 </div>

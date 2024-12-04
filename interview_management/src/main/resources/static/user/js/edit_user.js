@@ -6,7 +6,7 @@ $(document).ready(function() {
         $('#successPopup').fadeIn();
         const id = $("#userId").val()
         setTimeout(function() {
-            window.location.href = "http://localhost:9090/api/v1/user/user_detail/" + id;
+            window.location.href = "https://jobnet.click/api/v1/user/user_detail/" + id;
         }, 1500);
 
     }
@@ -179,6 +179,12 @@ $(document).ready(function() {
                 }
                 if (errors.phoneNo) {
                     $("#phoneNoError").text(errors.phoneNo).show();
+                }
+                if (errors.address) {
+                    $("#addressError").text(errors.address).show();
+                }
+                if (errors.note) {
+                    $("#noteError").text(errors.note).show();
                 }
                showFailPopup();
                setTimeout(function() {

@@ -58,7 +58,9 @@
                         <input type="text" class="form-control" name="phoneNo" id="phoneNo" 
                             placeholder="Type a number.." 
                             th:data-original-phoneno="${UserDTO.phoneNo}"
-                            th:value="${UserDTO.phoneNo}" />
+                            th:value="${UserDTO.phoneNo}"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '');" maxlength="15"
+                             />
                             
                         <div id="phoneNoError" class="text-danger" style="display:none;"></div> <!-- Error message for phone number -->
                     </div>
@@ -126,7 +128,9 @@
                         <label class="form-label"><b>Note</b></label>
                         <input type="text" class="form-control" name="note" 
                         th:value="${UserDTO.note}" />
+                        <div class="text-danger" id="noteError" style="display:none;"></div>
                     </div>
+                    
                 </div>
 
                 <div id="message" style="display:none;font-size: larger;"></div>

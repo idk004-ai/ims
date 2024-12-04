@@ -20,13 +20,14 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.savedrequest.RequestCache;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 import lombok.RequiredArgsConstructor;
 
+@EnableCaching
 @EnableRetry
 @Configuration
 @RequiredArgsConstructor
@@ -93,10 +94,6 @@ public class BeanConfig {
           return taskScheduler;
      }
 
-     @Bean
-     public RequestCache requestCache() {
-          return new CustomRequestCache();
-     }
 
      @Bean
      public CorsFilter corsFilter() {

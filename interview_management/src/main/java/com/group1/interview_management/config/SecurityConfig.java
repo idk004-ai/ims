@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.Customizer;
@@ -28,7 +27,6 @@ public class SecurityConfig {
      private final JwtFilterConfig jwtAuthFilter;
      private final AuthenticationProvider authenticationProvider;
      private final LogoutHandler logoutHandler;
-     private final RequestCache requestCache;
      private static final String[] WHITE_LIST_URL = {
                "/auth/**",
                "/common/**",
@@ -59,12 +57,12 @@ public class SecurityConfig {
                               .authenticated())
                     .formLogin(login -> login
                               .loginPage("/auth/login")
-                              .permitAll())
+                              .permitAll()
+                              .defaultSuccessUrl("/api/v1/home", true))
                     .sessionManagement(session -> session
                               .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                     .authenticationProvider(authenticationProvider)
                     .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                    .requestCache(cache -> cache.requestCache(requestCache))
                     .httpBasic(Customizer.withDefaults())
                     .logout(logout -> logout.logoutUrl("/auth/logout")
                               .addLogoutHandler(logoutHandler)

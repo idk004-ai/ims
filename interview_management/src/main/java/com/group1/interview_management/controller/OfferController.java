@@ -282,6 +282,7 @@ public class OfferController {
             // Return a bad request response with the validation errors.
             return ResponseEntity.badRequest().body(result.getAllErrors());
         }
+        offerService.saveOffer(offerCreateDTO);
 
         // If validation passes, return a success response indicating the offer was
         // updated successfully.

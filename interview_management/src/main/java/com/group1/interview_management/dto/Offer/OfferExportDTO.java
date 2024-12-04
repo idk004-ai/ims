@@ -1,11 +1,9 @@
 package com.group1.interview_management.dto.Offer;
 
-import com.group1.interview_management.entities.InterviewAssignment;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor

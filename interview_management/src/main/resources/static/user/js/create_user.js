@@ -89,11 +89,16 @@ $(document).ready(function() {
     function showSuccessPopup() {
         $('#successPopup').fadeIn();
         setTimeout(function() {
-            window.location.href = "http://localhost:9090/api/v1/user/get-all-user";
+            window.location.href = "https://jobnet.click/api/v1/user/get-all-user";
         }, 2000);
     }
 
     function showFailPopup() {
+        $('#failPopup').html(`
+            <div class="popup-content" style="background: #fff; padding: 20px; border-radius: 5px; max-width: 300px; margin: 50px auto; text-align: center;">
+                <h4 class="text-danger" style="margin: 0; font-size: 18px;">Failed to create user</h4>
+            </div>
+        `);
         $('#failPopup').fadeIn();
     }
 
@@ -127,6 +132,12 @@ $(document).ready(function() {
                 }
                 if (errors.errors.phoneNo) {
                     $("#phoneNoError").text(errors.errors.phoneNo).show();
+                }
+                if (errors.errors.address) {
+                    $("#addressError").text(errors.errors.address).show();
+                }
+                if (errors.errors.note) {
+                    $("#noteError").text(errors.errors.note).show();
                 }
                 showFailPopup();
                 setTimeout(function() {

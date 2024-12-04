@@ -210,13 +210,6 @@ function cancelOffer(interviewId) {
     });
 }
 
-function openCancelConfirmationModal(interviewId) {
-    document.getElementById('cancelConfirmationModal').style.display = 'flex';
-    document.getElementById('confirmCancel').onclick = function () {
-        cancelOffer(interviewId);
-    };
-}
 
-function closeCancelConfirmationModal() {
-    document.getElementById('cancelConfirmationModal').style.display = 'none';
-}
+
+

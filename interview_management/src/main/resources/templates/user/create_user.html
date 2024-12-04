@@ -27,11 +27,7 @@
         </div>
     </div>
     <div id="failPopup" class="popup-overlay" style="display: none;">
-        <div class="popup-content">
-            <div style="display: flex; align-items: center;">       
-                <h4 class="text-danger" style="margin: 0;">Failed to create user</h4>
-            </div>
-        </div>
+
     </div>
     
     
@@ -71,7 +67,7 @@
                     <div class="col-md-6 mb-3">
                         <label class="form-label"><b>Phone Number</b></label>
                         <input type="text" class="form-control" name="phoneNo" id="phoneNo" placeholder="Type a number.."/>
-                        <div id="phoneNoError" class="text-danger" style="display:none;"></div> <!-- Error message for phoneNo number -->
+                        <div id="phoneNoError" class="text-danger" style="display:none;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" maxlength="15"></div> <!-- Error message for phoneNo number -->
                     </div>
                 </div>
                 
@@ -91,7 +87,6 @@
                             <option value="">Select Status</option>
                             <option th:each="status : ${statuses}" th:value="${status.categoryId}" th:text="${status.categoryValue}"></option>
                         </select>
-
                         <div id="statusError" class="text-danger" style="display:none;"></div> <!-- Error message for status -->
                     </div>
                 </div>
@@ -123,10 +118,12 @@
                         </select>
                         <div id="departmentError" class="text-danger" style="display:none;"></div> <!-- Error message for department -->
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-lg-6 lg-3">
                         <label class="form-label"><b>Note</b></label>
                         <input type="text" class="form-control" name="note"/>
+                        <div id="noteError" class="text-danger" style="display:none;"></div> 
                     </div>
+                    
                 </div>
 
                 <div id="message" style="display:none;font-size: larger;"></div>

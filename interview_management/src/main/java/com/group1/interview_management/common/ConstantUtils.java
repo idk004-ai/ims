@@ -2,6 +2,10 @@ package com.group1.interview_management.common;
 
 public class ConstantUtils {
     // Constants master
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String ROLE_MANAGER = "ROLE_MANAGER";
+    public static final String ROLE_RECRUITER = "ROLE_RECRUITER";
+    public static final String ROLE_INTERVIEWER = "ROLE_INTERVIEWER";
     public static final String CANDIDATE_STATUS = "CANDIDATE_STATUS";
     public static final String POSITION = "POSITION";
     public static final String GENDER = "USER_GENDER";
@@ -26,6 +30,8 @@ public class ConstantUtils {
     public static final String USER_GENDER_MALE_CATEGORY_ID = "1";
     public static final String USER_GENDER_FEMALE_CATEGORY_ID = "2";
     public static final String USER_GENDER_OTHER_CATEGORY_ID = "3";
+    public static final Integer USER_ACTIVE_ID = 1;
+    public static final Integer USER_INACTIVE_ID = 2;
     
     // Constants for candidate status
     public static final String STATUS_OPEN="Open";

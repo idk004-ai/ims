@@ -89,7 +89,7 @@ public interface CandidateService {
      * Author: KhoiLNM
      * Date: 2022-11-11
      */
-    List<CandidateDTO> getAllCandidates();
+    List<CandidateDTO> getAllInterviewScheduleCandidates();
 
     /**
      * Get candidate by id and list of status
@@ -103,4 +103,6 @@ public interface CandidateService {
      * Date: 2022-11-11
      */
     Candidate getCandidateByIdAndStatusIds(Integer candidateId, BindingResult errors, String field, List<Integer> status);
+
+    boolean existsByPhoneNumber(String phoneNumber);
 }

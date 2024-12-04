@@ -73,6 +73,7 @@ public class InterviewServiceImpl implements InterviewService {
      private final EmailService emailService;
      private final ScheduleValidationService scheduleValidationService;
      private final InterviewResultProcess resultProcessor;
+     private final CandidateStatusStrategy candidateStatusStrategy;
 
      @Override
      public List<Interview> getAllInterview(LocalDate startDate, LocalDate endDate) {
@@ -82,9 +83,9 @@ public class InterviewServiceImpl implements InterviewService {
 
      @Override
      public Page<InterviewDTO> getAllInterview(InterviewFilterDTO filter, Authentication auth) {
-          
+
           Pageable pageable = PageRequest.of(filter.getPage(), filter.getPageSize(),
-                    Sort.by("createdDate").descending());
+                    Sort.by("modifiedDate").descending());
           Page<InterviewDTO> interviewPageDTO = interviewRepository.findAllByCondition(
                     filter.getStatusId(),
                     filter.getInterviewerId(),
@@ -290,34 +291,20 @@ public class InterviewServiceImpl implements InterviewService {
 
      @Override
      public InterviewDTO submitResult(Integer id, EditInterviewDTO submitInterviewDTO,
-               Authentication authenticatedUser, BindingResult errors, boolean mandatory) throws BindException {
+               User authenticatedUser, BindingResult errors, boolean mandatory) throws BindException {
           Interview interview = interviewRepository.findById(id).orElse(null);
+          Set<InterviewAssignment> interviewAssignments = interview.getInterviewAssignments();
+          Integer[] interviewerIds = interviewAssignments.stream()
+                    .map(i -> i.getInterviewer().getId())
+                    .toArray(Integer[]::new);
+          if (Arrays.stream(interviewerIds).noneMatch(interviewerId -> interviewerId == authenticatedUser.getId())) {
+               throw new AccessDeniedException(messageSource.getMessage("ME002.1", null, Locale.getDefault()));
+          }
           return resultProcessor.processResult(interview, submitInterviewDTO, errors, mandatory);
      }
 
-     /**
-      * Count the number interviews of candidate then updating the status of
-      * candidate to "Open"
-      * if number of Open interviews is 0
-      * 
-      * @param oldCandidate: Candidate
-      * @return void
-      */
-     private void updateOldCandidate(Candidate oldCandidate) {
-          int numberOfInterviews = interviewRepository
-                    .countInterviewsByCandidateId(
-                              oldCandidate.getCandidateId(),
-                              List.of(
-                                        ConstantUtils.INTERVIEW_STATUS_CLOSED,
-                                        ConstantUtils.INTERVIEW_STATUS_CANCELLED));
-          if (numberOfInterviews == 0) {
-               oldCandidate.setStatusId(ConstantUtils.CANDIDATE_OPEN);
-               candidateRepository.save(oldCandidate);
-          }
-     }
-
      @Override
-     public InterviewDTO editInterview(Integer id, EditInterviewDTO editInterviewDTO, Authentication authenticatedUser,
+     public InterviewDTO editInterview(Integer id, EditInterviewDTO editInterviewDTO, User authenticatedUser,
                BindingResult errors) throws BindException {
           Interview interview = interviewRepository.findById(id).orElse(null);
           if (interview == null) {
@@ -335,7 +322,8 @@ public class InterviewServiceImpl implements InterviewService {
           Candidate newCandidate = candidateService.getCandidateByIdAndStatusIds(
                     editInterviewDTO.getInterview_candidate(), errors, createFields.get(2).getName(),
                     List.of(ConstantUtils.CANDIDATE_OPEN, ConstantUtils.CANDIDATE_WAITING_FOR_INTERVIEW));
-          boolean isCandidateChanged = oldCandidate != null && newCandidate != null && oldCandidate.getCandidateId() != newCandidate.getCandidateId();
+          boolean isCandidateChanged = oldCandidate != null && newCandidate != null
+                    && oldCandidate.getCandidateId() != newCandidate.getCandidateId();
           List<User> interviewers = getInterviewersByIds(editInterviewDTO.getInterviewer_tag(), errors, createFields);
 
           List<User> recruiters = userService.getUserByIdAndRoleIds(List.of(editInterviewDTO.getInterview_recruiter()),
@@ -373,7 +361,7 @@ public class InterviewServiceImpl implements InterviewService {
           }
 
           if (isCandidateChanged) {
-               updateOldCandidate(oldCandidate);
+               candidateStatusStrategy.determineStatusForOldCandidate(oldCandidate);
           }
 
           newCandidate.setStatusId(ConstantUtils.CANDIDATE_WAITING_FOR_INTERVIEW);
@@ -400,7 +388,7 @@ public class InterviewServiceImpl implements InterviewService {
           interview.setStatusInterviewId(ConstantUtils.INTERVIEW_STATUS_CANCELLED);
           interviewRepository.save(interview);
           Candidate oldCandidate = interview.getCandidate();
-          updateOldCandidate(oldCandidate);
+          candidateStatusStrategy.determineStatusForOldCandidate(oldCandidate);
           return resultProcessor.getInterviewDTO(interview);
      }
 
@@ -428,7 +416,7 @@ public class InterviewServiceImpl implements InterviewService {
                props.put("scheduleDate", schedule);
                props.put("startTime", startTime);
                props.put("endTime", endTime);
-               props.put("interviewURL", "/api/v1/interview/view/" + id);
+               props.put("interviewURL", "http://localhost:9090/api/v1/interview/view/" + id);
                props.put("jobTitle", interview.getJob().getTitle());
                props.put("location", interview.getLocation());
                props.put("meetingLink", interview.getMeetingId());

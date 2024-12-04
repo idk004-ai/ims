@@ -5,10 +5,10 @@ import com.group1.interview_management.dto.candidate.CandidateCreateDTO;
 import com.group1.interview_management.dto.candidate.CandidateDTO;
 import com.group1.interview_management.dto.candidate.CandidateDetailDTO;
 import com.group1.interview_management.dto.candidate.CandidateSearchDTO;
-import com.group1.interview_management.entities.Master;
 import com.group1.interview_management.repositories.CandidateRepository;
 import com.group1.interview_management.services.CandidateService;
 import com.group1.interview_management.entities.Candidate;
+import com.group1.interview_management.entities.Interview;
 import com.group1.interview_management.services.MasterService;
 import com.group1.interview_management.services.UserService;
 
@@ -24,9 +24,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.validation.BindingResult;
 
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class CandidateServiceImpl implements CandidateService {
@@ -146,11 +143,19 @@ public class CandidateServiceImpl implements CandidateService {
         return candidateCreateDTO;
     }
 
+    private void cancelInterview(Candidate candidate) {
+        List<Interview> interviews = candidate.getInterviews();
+        for (Interview interview : interviews) {
+            interview.setStatusInterviewId(ConstantUtils.INTERVIEW_STATUS_CANCELLED);
+        }
+    }
+
     @Override
     public void deleteCandidate(Integer id) {
         Candidate candidate = candidateRepository.findById(id).orElse(null);
         if (candidate != null) {
             if (!candidate.getDeleteFlag()) {
+                cancelInterview(candidate);
                 candidate.setDeleteFlag(true);
                 candidateRepository.save(candidate);
             }
@@ -166,6 +171,7 @@ public class CandidateServiceImpl implements CandidateService {
     public void banCandidate(Integer id) {
         Candidate candidate = candidateRepository.findById(id).orElse(null);
         if (candidate != null && !candidate.getDeleteFlag()) {
+            cancelInterview(candidate);
             candidate.setStatusId(ConstantUtils.CANDIDATE_BANNED);
             candidateRepository.save(candidate);
         }
@@ -198,13 +204,13 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     /**
-     * Get all candidates
+     * Get all candidates with status is open or waiting for interview
      *
      * @return List<CandidateDTO>
      */
     @Override
-    public List<CandidateDTO> getAllCandidates() {
-        return candidateRepository.findAllIntervCandidateDTOs(ConstantUtils.CANDIDATE_STATUS, ConstantUtils.POSITION);
+    public List<CandidateDTO> getAllInterviewScheduleCandidates() {
+        return candidateRepository.findAllIntervCandidateDTOs(ConstantUtils.CANDIDATE_STATUS, List.of(ConstantUtils.CANDIDATE_OPEN, ConstantUtils.CANDIDATE_WAITING_FOR_INTERVIEW));
     }
 
     @Override
@@ -218,5 +224,10 @@ public class CandidateServiceImpl implements CandidateService {
             errors.rejectValue(field, "ME022.2", errorMessage);
         }
         return candidate;
+    }
+
+    @Override
+    public boolean existsByPhoneNumber(String phoneNumber) {
+        return candidateRepository.findByPhoneNumber(phoneNumber) != null;
     }
 }

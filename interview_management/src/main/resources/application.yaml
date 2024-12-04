@@ -1,0 +1,76 @@
+server:
+  servlet:
+    context-path: /api/v1
+  port: 8080
+
+#JWT
+jwt:
+  secret-key: a2hpYmlldGVtbWFuZ2tpZXBjYW1jYWRlbWRlbXBob25ndHJhbWFuZ3RpZW5naGF0Y2hvbmd1b2lkb2ljaGljYW5hbmh0aG9pY2hpY2FuYW5odGhvaWNvbnlldWVtbnVha2hvbmc=
+  expiration: 18000000
+  refresh-token:
+    path: /auth/refresh-token
+    # 1 day = 24 * 60 * 60 * 1000
+    expiration: 86400000
+
+
+spring:
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=100,expireAfterAccess=30m
+  application:
+    name: interview_management
+  datasource:
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/interviewManagement}
+    password: ${DBMS_PASSWORD:root}
+    username: ${DBMS_USERNAME:root}
+    driver-class-name: "com.mysql.cj.jdbc.Driver"
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        "[jdbc.batch_size]": 30
+        "[order_inserts]": true
+        "[order_updates]": true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: minhkhoilenhat04@gmail.com
+    password: msfi tdvq dyru czdg
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    protocol: smtp
+    debug: true
+
+  graphql:
+    cors:
+      allowed-origins: http://127.0.0.1:5500, https://jobnet.click
+      allowed-methods: GET, POST, PUT, DELETE, PATCH, OPTIONS
+      allowed-origin-patterns: /**
+
+  # Static resources
+
+  mvc:
+    static-path-pattern: /static/**
+  web:
+    resources:
+      static-locations: classpath:/static/
+
+  #Limit Excel
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  cached:
+    path: /api/v1/interview/view
+
+
+

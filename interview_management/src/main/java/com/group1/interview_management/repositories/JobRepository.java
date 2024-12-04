@@ -1,6 +1,5 @@
 package com.group1.interview_management.repositories;
 
-import com.group1.interview_management.dto.JobDTO.response.JobSearchResponse;
 import com.group1.interview_management.entities.Job;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -59,20 +58,44 @@ public interface JobRepository extends JpaRepository<Job, Integer> {
             """)
     LocalDate findJobStartDate(@Param("jobId") Integer jobId);
 
-    @Query("""
-            SELECT new com.group1.interview_management.dto.JobDTO.response.JobSearchResponse(
-                j.jobId, j.title, j.startDate, j.endDate, j.level, j.skills, s.categoryValue
-            )
-            FROM Job j
-            JOIN Master s ON j.statusJobId = s.categoryId AND s.category = :statusCategory
-            WHERE (:keyword IS NULL OR :keyword = '' OR LOWER(j.title) LIKE LOWER(CONCAT('%', :keyword, '%')))
-            AND (:status IS NULL OR s.categoryId = :status) and j.deleteFlag = false
-            ORDER BY j.modifiedDate DESC
-            """)
-    Page<JobSearchResponse> searchByKeyword(@Param("keyword") String keyword,
-                                            @Param("status") Integer status,
-                                            Pageable pageable, String statusCategory);
-
+    @Query(value = """
+        SELECT * FROM (
+                SELECT 
+            t1.job_id AS jobId,
+            t1.job_title AS title,
+            t1.start_date AS startDate,
+            t1.end_date AS endDate,
+            GROUP_CONCAT(DISTINCT m2.category_value ORDER BY m2.category_id SEPARATOR ', ') AS level,
+            GROUP_CONCAT(DISTINCT m1.category_value ORDER BY m1.category_id SEPARATOR ', ') AS skills,
+            m3.category_value AS categoryValue
+                FROM job t1
+                LEFT JOIN masters m1
+            ON FIND_IN_SET(m1.category_id, REPLACE(REPLACE(t1.skills, ' ', ''), ',,', ',')) > 0
+            AND m1.category like :categorySkills
+                LEFT JOIN masters m2
+            ON FIND_IN_SET(m2.category_id, REPLACE(REPLACE(t1.level, ' ', ''), ',,', ',')) > 0
+            AND m2.category like :categoryLevel
+                LEFT JOIN masters m3
+            ON m3.category = :categoryJobStatus AND m3.category_id = t1.status_job_id
+                WHERE (:status IS NULL OR m3.category_id = :status)
+                AND t1.delete_flag = false
+                GROUP BY t1.job_id
+                ORDER BY t1.modified_date DESC
+                ) n
+                 
+        WHERE (:keyword IS NULL OR :keyword = '' 
+                   OR LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(n.startDate) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(n.endDate) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(n.level) LIKE LOWER(CONCAT('%', :keyword, '%'))
+                   OR LOWER(n.skills) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        """, nativeQuery = true)
+Page<Object[]> searchByKeyword(@Param("keyword") String keyword,
+                               @Param("status") Integer status,
+                               Pageable pageable,
+                               String categorySkills,
+                               String categoryLevel,
+                               String categoryJobStatus);
     Job getJobByJobId(Integer jobId);
 
     @Query("""

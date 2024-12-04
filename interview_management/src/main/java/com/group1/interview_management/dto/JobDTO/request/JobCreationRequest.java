@@ -51,7 +51,9 @@ public class JobCreationRequest {
     @NotEmpty(message = "{ME002}")
     List<String> skills;
 
+    @Max(value = 500, message = "ME049.1")
     String workingAddress;
+    @Max(value = 500, message = "ME049.1")
     String description;
     String statusJob;
 }

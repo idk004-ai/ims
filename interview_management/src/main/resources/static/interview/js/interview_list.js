@@ -68,29 +68,6 @@ function loadPage(
     });
 }
 
-
-async function searchInterviews() {
-    try {
-        const searchQuery = document.getElementById('search-input').value;
-        const statusFilter = document.getElementById('status-filter').value;
-        const interviewerFilter = document.getElementById('interviewer-list').value;
-
-        initApi().then(api => {
-            api.post(`/interview?query=${searchQuery}&interviewStatus=${statusFilter}&interviewer=${interviewerFilter}`)
-                .then((data) => {
-                    updateInterviewTable(data.content);
-                    renderPagination(data.totalPages, data.number);
-                }).catch(error => {
-                    console.error(error);
-                });
-        });
-    } catch (error) {
-        console.error('Error during search:', error);
-        // Show error message to user
-        showErrorMessage('Search failed. Please try again.');
-    }
-}
-
 /**
  * Render dropdown menu and data from session storage
  */
@@ -114,8 +91,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         }
     }
 
-    const interviewerFilter = document.getElementById('interviewer-list');
-    const statusFilter = document.getElementById('status-filter');
     const searchInput = document.getElementById('search-input');
     const searchButton = document.getElementById('search-button');
 
@@ -127,24 +102,11 @@ document.addEventListener('DOMContentLoaded', async function () {
 
     searchInput.addEventListener('keypress', function (event) {
         if (event.key === 'Enter') {
-            event.preventDefault();
-            searchButton.click(); 
-            searchInterviews();
+            const searchValue = searchInput.value.trim();
+            urlParams.set('query', searchValue);
+            window.history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
+            loadPage(0);
         }
-    });
-
-    interviewerFilter.addEventListener('change', function () {
-        const selectedInterviewer = this.value;
-        urlParams.set('interviewer', selectedInterviewer);
-        window.history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
-        loadPage(0);
-    });
-
-    statusFilter.addEventListener('change', function () {
-        const selectedStatus = this.value;
-        urlParams.set('interviewStatus', selectedStatus);
-        window.history.pushState({}, '', `${window.location.pathname}?${urlParams.toString()}`);
-        loadPage(0);
     });
 
     searchButton.addEventListener('click', function () {

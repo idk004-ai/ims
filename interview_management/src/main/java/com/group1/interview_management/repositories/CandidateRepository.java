@@ -105,13 +105,15 @@ public interface CandidateRepository extends JpaRepository<Candidate, Integer> {
     @Query("""
             SELECT new com.group1.interview_management.dto.candidate.CandidateDTO(
                 c.candidateId, c.name, c.email, c.phoneNumber, 
-                p.categoryValue, u.email, s.categoryValue
+                "", u.email, s.categoryValue
             )
             FROM Candidate c 
             JOIN c.recruiter u 
             JOIN Master s ON c.statusId = s.categoryId AND s.category = :statusCategory 
-            JOIN Master p ON c.positionId = p.categoryId AND p.category = :positionCategory 
             WHERE c.deleteFlag = false
+            AND c.statusId IN :statusIds
             """)
-    List<CandidateDTO> findAllIntervCandidateDTOs(@Param("statusCategory") String statusCategory, @Param("positionCategory") String positionCategory);
+    List<CandidateDTO> findAllIntervCandidateDTOs(@Param("statusCategory") String statusCategory, @Param("statusIds") List<Integer> statusIds);
+
+    Candidate findByPhoneNumber(String phoneNumber);
 }

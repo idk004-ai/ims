@@ -14,6 +14,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -25,6 +26,8 @@ import jakarta.validation.constraints.NotNull;
 public class CreateInterviewDTO {
      @NotNull(message = "{ME002}")
      @NotBlank(message = "{ME002}")
+     // @Max(value = 500, message = "{ME022.7}")
+     @Size(max = 500, message = "{ME022.7}")
      String interview_title;
 
      @NotNull(message = "{ME002}")
@@ -52,8 +55,10 @@ public class CreateInterviewDTO {
      @Min(value = 1, message = "{ME002}")
      Integer interview_recruiter;
      
+     @Size(max = 500, message = "{ME022.8}")
      String interview_location;
      String note;
+     @Size(max = 500, message = "{ME022.8}")
      String meetingLink;
      String error;
 }

@@ -6,13 +6,11 @@ import com.group1.interview_management.dto.JobDTO.request.SearchJob;
 import com.group1.interview_management.dto.JobDTO.response.ApiResponse;
 import com.group1.interview_management.dto.JobDTO.response.JobResponse;
 import com.group1.interview_management.dto.JobDTO.response.JobSearchResponse;
-import com.group1.interview_management.dto.Offer.OfferExportDTO;
 import com.group1.interview_management.entities.Master;
 import com.group1.interview_management.entities.User;
 import com.group1.interview_management.services.MasterService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import lombok.experimental.NonFinal;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -21,6 +19,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,7 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -95,6 +93,11 @@ public class JobController {
     }
 
     // Edit job
+    @Secured({
+            "ROLE_ADMIN",
+            "ROLE_MANAGER",
+            "ROLE_RECRUITER",
+    })
     @GetMapping("/edit-job/{jobId}")
     public String editJob(@PathVariable("jobId") Integer jobId, Model model) {
         JobResponse job = jobService.getJobByJobId(jobId);
@@ -120,6 +123,11 @@ public class JobController {
     }
 
     // Receive data to update job
+    @Secured({
+            "ROLE_ADMIN",
+            "ROLE_MANAGER",
+            "ROLE_RECRUITER",
+    })
     @PostMapping("/edit-job")
     @ResponseBody
     public ResponseEntity<?> editJob(@Valid @RequestBody JobCreationRequest request, BindingResult errors,
@@ -133,6 +141,11 @@ public class JobController {
     }
 
     // create job
+    @Secured({
+            "ROLE_ADMIN",
+            "ROLE_MANAGER",
+            "ROLE_RECRUITER",
+    })
     @GetMapping("/create-job")
     public String createJob(Model model) {
         List<Master> skills = masterService.findByCategory(ConstantUtils.SKILLS);
@@ -159,6 +172,11 @@ public class JobController {
     }
 
     // Receive data to create new job
+    @Secured({
+            "ROLE_ADMIN",
+            "ROLE_MANAGER",
+            "ROLE_RECRUITER",
+    })
     @PostMapping("/create-job")
     public ResponseEntity<?> createJob(@Valid @RequestBody JobCreationRequest request, BindingResult errors,
                                        Authentication authenticatedUser) {
@@ -172,6 +190,11 @@ public class JobController {
     }
 
     // Delete job
+    @Secured({
+            "ROLE_ADMIN",
+            "ROLE_MANAGER",
+            "ROLE_RECRUITER",
+    })
     @DeleteMapping("/delete-job/{jobId}")
     public ResponseEntity<?> deleteJob(@PathVariable("jobId") Integer jobId) {
         jobService.deleteJob(jobId);
@@ -179,6 +202,11 @@ public class JobController {
     }
 
     // Receive file excel from client
+    @Secured({
+            "ROLE_ADMIN",
+            "ROLE_MANAGER",
+            "ROLE_RECRUITER",
+    })
     @PostMapping("/upload-excel")
     @ResponseBody
     public ApiResponse<?> uploadExcelFile(@Valid @RequestParam("file") MultipartFile file) {
@@ -199,9 +227,13 @@ public class JobController {
         }
     }
 
+    @Secured({
+            "ROLE_ADMIN",
+            "ROLE_MANAGER",
+            "ROLE_RECRUITER",
+    })
     @GetMapping("/export-errors")
     public void eportErrors(HttpServletResponse response) throws IOException {
-
         // Create workbook
         Workbook workbook = new XSSFWorkbook();
 

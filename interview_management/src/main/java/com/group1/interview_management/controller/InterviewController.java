@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -76,13 +77,17 @@ public class InterviewController {
           return ResponseEntity.ok(interviewService.getAllInterview(filter, authenticatedUser));
      }
 
-     // not Interviewer role
+     @Secured({
+               ConstantUtils.ROLE_ADMIN,
+               ConstantUtils.ROLE_MANAGER,
+               ConstantUtils.ROLE_RECRUITER,
+     })
      @PostMapping("/create")
      @ResponseBody
      public ResponseEntity<?> createInterview(@Valid @RequestBody CreateInterviewDTO interviewDto, BindingResult errors,
                Authentication authenticatedUser) throws BindException, Exception {
           User user = (User) authenticatedUser.getPrincipal();
-          if (user == null || user.getRoleId() == ConstantUtils.INTERVIEWER_ROLE) {
+          if (user == null) {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
                throw new AccessDeniedException(err);
           }
@@ -90,10 +95,15 @@ public class InterviewController {
           return ResponseEntity.status(HttpStatus.CREATED).body(createdInterviewDto);
      }
 
+     @Secured({
+               ConstantUtils.ROLE_ADMIN,
+               ConstantUtils.ROLE_MANAGER,
+               ConstantUtils.ROLE_RECRUITER,
+     })
      @GetMapping("/create")
      public String createInterview(Model model) {
           model.addAttribute("job_list", jobService.getAllInterviewJobs());
-          model.addAttribute("candidate_list", candidateService.getAllCandidates());
+          model.addAttribute("candidate_list", candidateService.getAllInterviewScheduleCandidates());
           model.addAttribute("recruiter_list", userService.getAllUsersByRole(ConstantUtils.RECRUITER_ROLE));
           model.addAttribute("interviewers", userService.getAllUsersByRole(ConstantUtils.INTERVIEWER_ROLE));
           return "interview/create-interview";
@@ -135,8 +145,9 @@ public class InterviewController {
           return "interview/interview-information";
      }
 
+     @Secured(ConstantUtils.ROLE_INTERVIEWER)
      @GetMapping("/submit/{interviewId}")
-     public String getSubmitResultPage(@PathVariable Integer interviewId, Model model) {
+     public String getSubmitResultPage(@PathVariable Integer interviewId, Model model, Authentication authenticatedUser) {
           EditInterviewDTO interview = interviewService.getInterviewDisplayableInfo(interviewId);
           int statusId = masterService.findByCategoryAndValue(ConstantUtils.INTERVIEW_STATUS, interview.getStatus())
                     .get().getCategoryId();
@@ -145,12 +156,18 @@ public class InterviewController {
           if (isInvalidStatus) {
                return "redirect:/interview";
           }
+          User user = (User) authenticatedUser.getPrincipal();
+          Integer[] interviewerIds = interview.getInterviewer_tag();
+          if (Arrays.stream(interviewerIds).noneMatch(id -> id == user.getId())) {
+               return "auth/access_denied";
+          }
           List<Master> masterResults = masterService.findByCategory(ConstantUtils.INTERVIEW_RESULT);
           renderFormData(interview, model);
           model.addAttribute("results", masterResults);
           return "interview/interview-submit";
      }
 
+     @Secured(ConstantUtils.ROLE_INTERVIEWER)
      @PostMapping("/submit/{interviewId}")
      @ResponseBody
      public ResponseEntity<?> submitResult(
@@ -164,10 +181,15 @@ public class InterviewController {
                throw new AccessDeniedException(err);
           }
           return ResponseEntity.ok()
-                    .body(interviewService.submitResult(interviewId, submitInterviewDTO, authenticatedUser, errors,
+                    .body(interviewService.submitResult(interviewId, submitInterviewDTO, user, errors,
                               true));
      }
 
+     @Secured({
+               ConstantUtils.ROLE_ADMIN,
+               ConstantUtils.ROLE_MANAGER,
+               ConstantUtils.ROLE_RECRUITER,
+     })
      @GetMapping("/edit/{interviewId}")
      public String getEditForm(@PathVariable Integer interviewId, Model model) {
           EditInterviewDTO interview = interviewService.getInterviewDisplayableInfo(interviewId);
@@ -179,7 +201,7 @@ public class InterviewController {
                return "redirect:/interview";
           }
           model.addAttribute("job_list", jobService.getAllInterviewJobs());
-          model.addAttribute("candidate_list", candidateService.getAllCandidates());
+          model.addAttribute("candidate_list", candidateService.getAllInterviewScheduleCandidates());
           model.addAttribute("recruiter_list", userService.getAllUsersByRole(ConstantUtils.RECRUITER_ROLE));
           model.addAttribute("interview", interview);
           model.addAttribute("results", masterService.findByCategory(ConstantUtils.INTERVIEW_RESULT));
@@ -187,6 +209,11 @@ public class InterviewController {
           return "interview/interview-edit";
      }
 
+     @Secured({
+               ConstantUtils.ROLE_ADMIN,
+               ConstantUtils.ROLE_MANAGER,
+               ConstantUtils.ROLE_RECRUITER,
+     })
      @PostMapping("/edit/{interviewId}")
      @ResponseBody
      public ResponseEntity<?> editInterview(
@@ -195,20 +222,25 @@ public class InterviewController {
                Authentication authenticatedUser,
                BindingResult errors) throws BindException, AccessDeniedException {
           User user = (User) authenticatedUser.getPrincipal();
-          if (user == null || user.getRoleId() == ConstantUtils.INTERVIEWER_ROLE) {
+          if (user == null) {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
                throw new AccessDeniedException(err);
           }
           return ResponseEntity.ok()
-                    .body(interviewService.editInterview(interviewId, interviewDTO, authenticatedUser, errors));
+                    .body(interviewService.editInterview(interviewId, interviewDTO, user, errors));
      }
 
+     @Secured({
+               ConstantUtils.ROLE_ADMIN,
+               ConstantUtils.ROLE_MANAGER,
+               ConstantUtils.ROLE_RECRUITER,
+     })
      @PostMapping("/cancel/{interviewId}")
      @ResponseBody
      public ResponseEntity<?> cancelInterview(@PathVariable Integer interviewId, Authentication authenticatedUser)
                throws BindException {
           User user = (User) authenticatedUser.getPrincipal();
-          if (user == null || user.getRoleId() == ConstantUtils.INTERVIEWER_ROLE) {
+          if (user == null) {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
                throw new AccessDeniedException(err);
           }
@@ -219,11 +251,16 @@ public class InterviewController {
           }
      }
 
+     @Secured({
+               ConstantUtils.ROLE_ADMIN,
+               ConstantUtils.ROLE_MANAGER,
+               ConstantUtils.ROLE_RECRUITER,
+     })
      @PostMapping("/send-reminder-now/{interviewId}")
      @ResponseBody
      public ResponseEntity<?> postMethodName(@PathVariable Integer interviewId, Authentication authentication) {
           User user = (User) authentication.getPrincipal();
-          if (user == null || user.getRoleId() == ConstantUtils.INTERVIEWER_ROLE) {
+          if (user == null) {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
                throw new AccessDeniedException(err);
           }
