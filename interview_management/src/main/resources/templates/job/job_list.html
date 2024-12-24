@@ -25,7 +25,7 @@
         <div class="app-title">
             <ul class="app-breadcrumb breadcrumb side">
                 <li class="breadcrumb-item active">
-                    <a href="/api/v1/jobs/jobList"><b>Job List</b></a>
+                    <a href="/api/v1/jobs/list-job"><b>Job List</b></a>
                 </li>
             </ul>
             <div id="clock"></div>
@@ -64,7 +64,7 @@
                 <i class="fas fa-plus"></i> Import Job
             </button>
             <!--        </a>-->
-            <a href="https://firebasestorage.googleapis.com/v0/b/interviewmangement-7da65.appspot.com/o/Template%2FJoblist-T8-2022.xlsx?alt=media&token=7fecbcbd-a91f-4701-bbe4-ee15a8e95b71"
+            <a th:href="${excel}"
                 style="text-decoration: none;">
                 <button type="button" th:if="${user.roleId != 4}" class="btn btn-custom-add"
                     style="margin-bottom: 10px;" id="template">

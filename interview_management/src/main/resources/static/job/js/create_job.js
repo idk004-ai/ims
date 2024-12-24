@@ -61,8 +61,8 @@ function submitEditJobForm() {
     const title = document.getElementById('title').value;
     const skills = document.getElementById('skills');
     const skillsSelectedValues = Array.from(skills.selectedOptions).map(option => option.value);
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
+    let startDate = document.getElementById('startDate').value;
+    let endDate = document.getElementById('endDate').value;
     const salaryFrom = document.getElementById('salaryFrom').value !== "" ? document.getElementById('salaryFrom').value.replace(/\./g, '') : 0;
     const salaryTo = document.getElementById('salaryTo').value !== "" ? document.getElementById('salaryTo').value.replace(/\./g, '') : 0;
     const benefits = document.getElementById('benefits');
@@ -72,6 +72,8 @@ function submitEditJobForm() {
     const levelSelectedValues = Array.from(level.selectedOptions).map(option => option.value);
     const description = document.getElementById('description').value;
 
+    startDate = convertToDate(startDate);
+    endDate = convertToDate(endDate);
     let a = currentURL.split("/");
 
     const formData = {
@@ -98,8 +100,8 @@ function submitCreateJobForm() {
     const title = document.getElementById('title').value;
     const skills = document.getElementById('skills');
     const skillsSelectedValues = Array.from(skills.selectedOptions).map(option => option.value);
-    const startDate = document.getElementById('startDate').value;
-    const endDate = document.getElementById('endDate').value;
+    let startDate = document.getElementById('startDate').value;
+    let endDate = document.getElementById('endDate').value;
     const salaryFrom = document.getElementById('salaryFrom').value !== "" ? document.getElementById('salaryFrom').value.replace(/\./g, '') : 0;
     const salaryTo = document.getElementById('salaryTo').value !== "" ? document.getElementById('salaryTo').value.replace(/\./g, '') : 0;
     const benefits = document.getElementById('benefits');
@@ -109,6 +111,8 @@ function submitCreateJobForm() {
     const levelSelectedValues = Array.from(level.selectedOptions).map(option => option.value);
     const description = document.getElementById('description').value;
 
+    startDate = convertToDate(startDate);
+    endDate = convertToDate(endDate);
     const formData = {
         title: title,
         skills: skillsSelectedValues,
@@ -161,4 +165,25 @@ function f(formData, type) {
 
 function hideFailModal(){
     document.getElementById('failModal').style.display = 'none';
+}
+
+
+function convertToDate(input) {
+    const regex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!regex.test(input)) {
+        return "";
+    }
+    const date = new Date(input);
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+    const [year, month, day] = input.split("-");
+    if (
+        date.getFullYear() !== parseInt(year, 10) ||
+        date.getMonth() + 1 !== parseInt(month, 10) ||
+        date.getDate() !== parseInt(day, 10)
+    ) {
+        return "";
+    }
+    return date.toISOString().split("T")[0];
 }

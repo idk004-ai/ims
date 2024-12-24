@@ -37,6 +37,7 @@ import org.springframework.validation.BindingResult;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,6 +100,7 @@ public class JobServiceImpl implements JobService {
                 job.setStatusJobId(2);
             } else {
                 job.setStatusJobId(3);
+                interviewService.cancelInterviews(Job.class);
             }
         }
 
@@ -108,6 +110,13 @@ public class JobServiceImpl implements JobService {
 
     //check for update
     private void checkForUpdate(JobCreationRequest request, Field[] fields, BindingResult errors) {
+        LocalDate startDateOld = jobRepository.getStartDateByJobId(request.getJobId());
+        LocalDate startDateNew = request.getStartDate();
+
+        if (errors.getFieldError("startDate") == null && startDateOld.isAfter(LocalDate.now())) {
+            checkForCreate(request, fields, errors);
+            return;
+        }
         if (errors.getFieldError("startDate") == null && request.getStartDate().isBefore(jobRepository.getStartDateByJobId(request.getJobId()))) {
             String errorMessage = messageSource.getMessage("ME017.1", null, Locale.getDefault());
             errors.rejectValue(fields[4].getName(), "ME017.1", errorMessage);
@@ -156,6 +165,9 @@ public class JobServiceImpl implements JobService {
     //Get job detail by jobId and response JobResponse
     public JobResponse getJobByJobId(Integer jobId) {
         Job job = jobRepository.getJobByJobId(jobId);
+        if (job == null) {
+            return null;
+        }
         return getJobResponse(job);
     }
 
@@ -367,8 +379,34 @@ public class JobServiceImpl implements JobService {
     //change String to LocalDate
     private LocalDate getLocalDateFromString(String date) {
         try {
-            return LocalDate.parse(date);
-        } catch (DateTimeParseException e) {
+            if (!date.matches("\\d+")) {
+                List<String> possibleFormats = Arrays.asList(
+                        "yyyy-MM-dd",
+                        "MM-dd-yyyy",
+                        "dd-MM-yyyy",
+                        "MM/dd/yyyy",
+                        "dd/MM/yyyy",
+                        "yyyy/MM/dd"
+                );
+                LocalDate localDate = null;
+
+                DateTimeFormatter formatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                for (String format : possibleFormats) {
+                    try {
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+                        localDate = LocalDate.parse(date, formatter);
+                        String formattedDate = localDate.format(formatter1);
+                        return LocalDate.parse(formattedDate, formatter1);
+                    } catch (DateTimeParseException e) {
+                    }
+                }
+                return localDate;
+            }
+            long days = Integer.parseInt(date);
+            LocalDate baseDate = LocalDate.of(1899, 12, 30);
+            LocalDate resultDate = baseDate.plusDays(days);
+            return resultDate;
+        } catch (Exception e) {
             return null;
         }
     }
@@ -386,15 +424,10 @@ public class JobServiceImpl implements JobService {
     private String getStringFromCell(Cell cell) {
         if (cell != null) {
             if (cell.getCellType() == CellType.NUMERIC) {
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    return sdf.format(cell.getDateCellValue());
-                } else {
-                    try {
-                        return String.valueOf((long) cell.getNumericCellValue()).trim();
-                    } catch (Exception e) {
-                        return "0";
-                    }
+                try {
+                    return String.valueOf((long) cell.getNumericCellValue()).trim();
+                } catch (Exception e) {
+                    return "0";
                 }
             } else {
                 return cell.getStringCellValue().trim();

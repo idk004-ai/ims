@@ -7,6 +7,7 @@ import com.group1.interview_management.dto.candidate.CandidateDetailDTO;
 import com.group1.interview_management.dto.candidate.CandidateSearchDTO;
 import com.group1.interview_management.repositories.CandidateRepository;
 import com.group1.interview_management.services.CandidateService;
+import com.group1.interview_management.services.InterviewIntermediaryService;
 import com.group1.interview_management.entities.Candidate;
 import com.group1.interview_management.entities.Interview;
 import com.group1.interview_management.services.MasterService;
@@ -38,6 +39,9 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private InterviewIntermediaryService interviewService;
 
     @Override
     public Page<CandidateDTO> searchCandidates(CandidateSearchDTO request) {
@@ -175,6 +179,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setStatusId(ConstantUtils.CANDIDATE_BANNED);
             candidateRepository.save(candidate);
         }
+        interviewService.cancelInterviews(Candidate.class);
     }
 
     @Override
@@ -210,7 +215,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     @Override
     public List<CandidateDTO> getAllInterviewScheduleCandidates() {
-        return candidateRepository.findAllIntervCandidateDTOs(ConstantUtils.CANDIDATE_STATUS, List.of(ConstantUtils.CANDIDATE_OPEN, ConstantUtils.CANDIDATE_WAITING_FOR_INTERVIEW));
+        return candidateRepository.findAllIntervCandidateDTOs(ConstantUtils.CANDIDATE_STATUS, List.of(ConstantUtils.CANDIDATE_BANNED));
     }
 
     @Override

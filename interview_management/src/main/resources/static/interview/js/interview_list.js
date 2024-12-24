@@ -12,16 +12,16 @@ async function updateInterviewTable(interviews) {
 
     interviews.forEach(interview => {
         const row = `
-               <tr id=${interview.interviewId}>
-                    <td>${interview.title}</td>
-                    <td>${interview.candidate}</td>
-                    <td>${interview.interviewer}</td>
-                    <td>${interview.time}</td>
-                    <td>${!interview.result ? 'N/A' : interview.result}</td>
-                    <td>${interview.statusInterview}</td>
-                    <td>${interview.job}</td>
+               <tr id=${interview.interviewId} class="interview-row" data-interview-id="${interview.interviewId}">
+                    <td class="clickable">${interview.title}</td>
+                    <td class="clickable">${interview.candidate}</td>
+                    <td class="clickable">${interview.interviewer}</td>
+                    <td class="clickable">${interview.time}</td>
+                    <td class="clickable">${!interview.result ? 'N/A' : interview.result}</td>
+                    <td class="clickable">${interview.statusInterview}</td>
+                    <td class="clickable">${interview.job}</td>
                     <td class="action-icons">
-                        <a href="/api/v1/interview/view/${interview.interviewId}" style = "text-decoration: none;">
+                        <a href="/api/v1/interview/view/${interview.interviewId}" style="text-decoration: none;">
                             <i class="fas fa-eye" style="color:black" title="View"></i>
                         </a>
                         ${(interview.statusInterview === 'Closed' || interview.statusInterview === 'Cancelled')
@@ -34,6 +34,15 @@ async function updateInterviewTable(interviews) {
                </tr>
           `;
         tableBody.innerHTML += row;
+    });
+
+    // Add click event listener to all clickable cells
+    const clickableCells = document.querySelectorAll('.clickable');
+    clickableCells.forEach(cell => {
+        cell.addEventListener('click', function () {
+            const interviewId = this.parentElement.getAttribute('data-interview-id');
+            window.location.href = `/api/v1/interview/view/${interviewId}`;
+        });
     });
 }
 

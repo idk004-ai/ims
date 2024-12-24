@@ -7,8 +7,8 @@ public enum EmailTemplateName {
      ACTIVATE_ACCOUNT("activate_account"),
      RESET_PASSWORD_EMAIL("reset_password_email"),
      CREATE_ACCOUNT_MAIL("create_account_mail"),
-     INTERVIEW_SCHEDULE_REMINDER("/interview/interview-reminder"),
-     INTERVIEW_SCHEDULE_CANCELLATION("/interview/interview-cancellation"),
+     INTERVIEW_SCHEDULE_REMINDER("interview/interview-reminder"),
+     INTERVIEW_SCHEDULE_CANCELLATION("interview/interview-cancellation"),
      REMINDER("reminder");
      private final String name;
 

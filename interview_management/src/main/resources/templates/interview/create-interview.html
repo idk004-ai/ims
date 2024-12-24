@@ -72,8 +72,7 @@
                     <select id="interview_candidate" class="form-select">
                         <option value="0" disabled selected>Select candidate name</option>
                         <th:block th:each="c : ${candidate_list}">
-                            <option th:value="${c.id}" th:text="${c.fullName + '(' + c.status + ')'}"
-                                th:disabled="${c.status == 'Failed Interview' || c.status == 'Passed Interview'}">
+                            <option th:value="${c.id}" th:text="${c.fullName + '(' + c.status + ')'}">
                         </th:block>
                         <!-- render list of candidate here -->
                     </select>
@@ -86,7 +85,7 @@
                             class="text-danger">*</span></label>
                     <select name="interviewer_select" id="interviewer_select" onchange="removeError()" multiple>
                         <tr th:each="interviewer : ${interviewers}">
-                            <option th:value="${interviewer.id}" th:text="${interviewer.fullname}"></option>
+                            <option th:value="${interviewer.id}" th:text="${interviewer.username}"></option>
                         </tr>
                     </select>
                     <input type="hidden" id="interviewer_tag">
@@ -131,7 +130,7 @@
                     <select id="interview_recruiter" class="form-select">
                         <option value="0" selected>Select recruiter name</option>
                         <th:block th:each="r : ${recruiter_list}">
-                            <option th:value="${r.id}" th:text="${r.fullname}">
+                            <option th:value="${r.id}" th:text="${r.username}">
                         </th:block>
                         <!-- render list of recruiter here -->
                     </select>

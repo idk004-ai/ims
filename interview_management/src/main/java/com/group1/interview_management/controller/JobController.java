@@ -64,6 +64,7 @@ public class JobController {
 
         List<Master> statuses = masterService.getAllJobStatuses();
         model.addAttribute("statuses", statuses);
+        model.addAttribute("excel", messageSource.getMessage("job.excel", null, Locale.getDefault()));
         model.addAttribute("fail", messageSource.getMessage("ME015", null, Locale.getDefault()));
         model.addAttribute("success", messageSource.getMessage("ME016", null, Locale.getDefault()));
         return "job/job_list";
@@ -78,8 +79,14 @@ public class JobController {
 
     //Detail job
     @GetMapping("/detail-job/{jobId}")
-    public String getJobDetail(@PathVariable("jobId") Integer jobId, Model model) {
-        JobResponse job = jobService.getJobByJobId(jobId);
+    public String getJobDetail(@PathVariable("jobId") String jobId, Model model) {
+        if (!isNumericOnly(jobId)) {
+            return "404";
+        }
+        JobResponse job = jobService.getJobByJobId(Integer.parseInt(jobId));
+        if(job == null || job.getDeleteFlag()) {
+            return "404";
+        }
         model.addAttribute("job", job);
 
         // Get current user
@@ -99,8 +106,15 @@ public class JobController {
             "ROLE_RECRUITER",
     })
     @GetMapping("/edit-job/{jobId}")
-    public String editJob(@PathVariable("jobId") Integer jobId, Model model) {
-        JobResponse job = jobService.getJobByJobId(jobId);
+    public String editJob(@PathVariable("jobId") String jobId, Model model) {
+        if (!isNumericOnly(jobId)) {
+            return "404";
+        }
+        JobResponse job = jobService.getJobByJobId(Integer.parseInt(jobId));
+        if(job == null || job.getDeleteFlag()) {
+            return "404";
+        }
+
         List<Master> skills = masterService.findByCategory(ConstantUtils.SKILLS);
         List<Master> benefits = masterService.findByCategory(ConstantUtils.BENEFIT);
         List<Master> levels = masterService.findByCategory(ConstantUtils.LEVEL);
@@ -196,8 +210,11 @@ public class JobController {
             "ROLE_RECRUITER",
     })
     @DeleteMapping("/delete-job/{jobId}")
-    public ResponseEntity<?> deleteJob(@PathVariable("jobId") Integer jobId) {
-        jobService.deleteJob(jobId);
+    public ResponseEntity<?> deleteJob(@PathVariable("jobId") String jobId) {
+        if (!isNumericOnly(jobId)) {
+            return ResponseEntity.noContent().build();
+        }
+        jobService.deleteJob(Integer.parseInt(jobId));
         return ResponseEntity.noContent().build();
     }
 
@@ -287,8 +304,8 @@ public class JobController {
                 String field = fieldError.getField();
                 String defaultMessage = fieldError.getDefaultMessage();
                 Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(entry.getKey());
-                row.createCell(1).setCellValue(field);
+                row.createCell(0).setCellValue(entry.getKey() + 1);
+                row.createCell(1).setCellValue(formatString(field));
                 row.createCell(2).setCellValue(defaultMessage);
             }
         }
@@ -305,5 +322,17 @@ public class JobController {
         workbook.close();
     }
 
+    public static String formatString(String input) {
+        if (input == null || input.isEmpty()) {
+            return input;
+        }
+        String formatted = input.replaceAll("([A-Z])", " $1").trim();
+        return formatted.substring(0, 1).toUpperCase() + formatted.substring(1);
+    }
+
+
+    private boolean isNumericOnly(String str) {
+        return str != null && str.matches("\\d+");
+    }
 
 }

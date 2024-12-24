@@ -79,6 +79,13 @@ public class ConstantUtils {
 
     // Constants for offer
     public static final Integer OFFER_STATUS_WAITING_FOR_APPROVAL = 1;
+    public static final Integer OFFER_STATUS_APPROVED_OFFER = 2;
+    public static final Integer OFFER_STATUS_REJECTED_OFFER = 3;
+    public static final Integer OFFER_STATUS_WAITING_FOR_RESPONSE = 4;
+    public static final Integer OFFER_STATUS_ACCEPTED_OFFER = 5;
+    public static final Integer OFFER_STATUS_DECLINED_OFFER = 6;
+    public static final Integer OFFER_STATUS_CANCELLED = 7;
+
 
     // Constants for recruiter
     public static final String RECRUITER = "RECRUITER";

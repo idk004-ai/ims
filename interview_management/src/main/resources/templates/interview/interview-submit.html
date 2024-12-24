@@ -140,7 +140,7 @@
                     <button class="btn btn-primary me-2" onclick="submitResult()">
                          Submit
                     </button>
-                    <button type="button" onclick="goToList()" class="btn btn-secondary">
+                    <button type="button" onclick="redirectToMain()" class="btn btn-secondary">
                          Cancel
                     </button>
                </div>
@@ -148,7 +148,7 @@
                <!-- </form> -->
                <div id="submitResultModalSuccess" class="modal-overlay">
                     <div class="modal-content">
-                         <h4>Interview created successfully</h4>
+                         <h4>Submit successfully</h4>
                          <div class="modal-buttons">
                               <button class="btn btn-success" onclick="redirectToMain()">
                                    OK
@@ -159,7 +159,7 @@
 
                <div id="submitResultModalError" class="modal-overlay">
                     <div class="modal-content">
-                         <h4>Interview created unsuccessfully</h4>
+                         <h4>Submit unsuccessfully</h4>
                          <div class="modal-buttons">
                               <button class="btn btn-danger" onclick="closeModal('submitResultModalError')">
                                    OK
@@ -170,9 +170,6 @@
      </main>
      <script>
           new Drop_list_multi_choice("interviewer_select");
-          function goToList() {
-               window.location.href = "/api/v1/interview";
-          }
 
           function submitResult() {
                const interviewResult = document.getElementById('interview_result').value;

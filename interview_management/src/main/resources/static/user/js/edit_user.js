@@ -6,7 +6,7 @@ $(document).ready(function() {
         $('#successPopup').fadeIn();
         const id = $("#userId").val()
         setTimeout(function() {
-            window.location.href = "https://jobnet.click/api/v1/user/user_detail/" + id;
+            window.location.href = "/api/v1/user/user_detail/" + id;
         }, 1500);
 
     }

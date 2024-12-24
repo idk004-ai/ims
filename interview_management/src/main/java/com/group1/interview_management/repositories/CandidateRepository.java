@@ -97,10 +97,10 @@ public interface CandidateRepository extends JpaRepository<Candidate, Integer> {
             SELECT c
             FROM Candidate c
             WHERE c.candidateId = :candidateId
-            AND c.statusId IN :statusIds
+            AND c.statusId NOT IN :excludeStatuses
             AND c.deleteFlag = false
             """)
-    Optional<Candidate> findCandidateByIdAndStatusId(@Param("candidateId") Integer candidateId, @Param("statusIds")List<Integer> statusIds);
+    Optional<Candidate> findCandidateByIdAndStatusId(@Param("candidateId") Integer candidateId, @Param("excludeStatuses")List<Integer> excludeStatuses);
 
     @Query("""
             SELECT new com.group1.interview_management.dto.candidate.CandidateDTO(
@@ -111,9 +111,9 @@ public interface CandidateRepository extends JpaRepository<Candidate, Integer> {
             JOIN c.recruiter u 
             JOIN Master s ON c.statusId = s.categoryId AND s.category = :statusCategory 
             WHERE c.deleteFlag = false
-            AND c.statusId IN :statusIds
+            AND c.statusId NOT IN (:excludeStatuses)
             """)
-    List<CandidateDTO> findAllIntervCandidateDTOs(@Param("statusCategory") String statusCategory, @Param("statusIds") List<Integer> statusIds);
+    List<CandidateDTO> findAllIntervCandidateDTOs(@Param("statusCategory") String statusCategory, @Param("excludeStatuses") List<Integer> excludeStatuses);
 
     Candidate findByPhoneNumber(String phoneNumber);
 }

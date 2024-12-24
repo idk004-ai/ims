@@ -23,4 +23,5 @@ public class JobResponse {
     String skills;
     String workingAddress;
     String status;
+    Boolean deleteFlag;
 }

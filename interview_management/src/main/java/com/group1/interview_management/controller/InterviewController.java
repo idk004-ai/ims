@@ -28,16 +28,19 @@ import com.group1.interview_management.dto.JobDTO.response.JobResponse;
 import com.group1.interview_management.dto.candidate.CandidateDetailDTO;
 import com.group1.interview_management.dto.interview.EditInterviewDTO;
 import com.group1.interview_management.services.CandidateService;
+import com.group1.interview_management.services.InterviewQueryManager;
+import com.group1.interview_management.services.InterviewResultManager;
+import com.group1.interview_management.services.InterviewScheduleManager;
 import com.group1.interview_management.services.JobService;
 import com.group1.interview_management.dto.interview.CreateInterviewDTO;
 import com.group1.interview_management.dto.interview.InterviewDTO;
 import com.group1.interview_management.dto.interview.InterviewFilterDTO;
 import com.group1.interview_management.entities.Master;
 import com.group1.interview_management.entities.User;
-import com.group1.interview_management.services.InterviewService;
 import com.group1.interview_management.services.MasterService;
 import com.group1.interview_management.services.UserService;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,12 +55,14 @@ import org.springframework.context.MessageSource;
 @RequiredArgsConstructor
 @Slf4j
 public class InterviewController {
-     private final InterviewService interviewService;
      private final UserService userService;
      private final MasterService masterService;
      private final CandidateService candidateService;
      private final JobService jobService;
      private final MessageSource messageSource;
+     private final InterviewQueryManager interviewQueryManager;
+     private final InterviewResultManager interviewResultManager;
+     private final InterviewScheduleManager interviewScheduleManager;
 
      @GetMapping
      public String listInterviews(Model model) {
@@ -74,7 +79,7 @@ public class InterviewController {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
                throw new AccessDeniedException(err);
           }
-          return ResponseEntity.ok(interviewService.getAllInterview(filter, authenticatedUser));
+          return ResponseEntity.ok(interviewQueryManager.getAllInterview(filter, user));
      }
 
      @Secured({
@@ -91,7 +96,7 @@ public class InterviewController {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
                throw new AccessDeniedException(err);
           }
-          InterviewDTO createdInterviewDto = interviewService.createInterview(interviewDto, authenticatedUser, errors);
+          InterviewDTO createdInterviewDto = interviewScheduleManager.createSchedule(interviewDto, user, errors);
           return ResponseEntity.status(HttpStatus.CREATED).body(createdInterviewDto);
      }
 
@@ -121,7 +126,7 @@ public class InterviewController {
           JobResponse job = jobService.getJobByJobId(interview.getInterview_job());
           CandidateDetailDTO candidate = candidateService.getCandidateById(interview.getInterview_candidate());
           List<UserDTO> interviewersAssigned = convertInterviewerIdsToUserDTOs(interview.getInterviewer_tag());
-          String listOfInterviewers = interviewersAssigned.stream().map(UserDTO::getFullname)
+          String listOfInterviewers = interviewersAssigned.stream().map(UserDTO::getUsername)
                     .collect(Collectors.joining(", "));
           UserDTO recruiter = userService.getUserById(interview.getInterview_recruiter());
           String result = null;
@@ -134,21 +139,22 @@ public class InterviewController {
           model.addAttribute("job", job.getTitle());
           model.addAttribute("candidate", candidate.getFullName());
           model.addAttribute("interviewers", listOfInterviewers);
-          model.addAttribute("recruiter", recruiter.getFullname());
+          model.addAttribute("recruiter", recruiter.getUsername());
           model.addAttribute("result", result);
      }
 
      @GetMapping("/view/{interviewId}")
      public String getDetailPage(@PathVariable Integer interviewId, Model model) {
-          EditInterviewDTO interview = interviewService.getInterviewDisplayableInfo(interviewId);
+          EditInterviewDTO interview = interviewQueryManager.getInterviewDetails(interviewId);
           renderFormData(interview, model);
           return "interview/interview-information";
      }
 
      @Secured(ConstantUtils.ROLE_INTERVIEWER)
      @GetMapping("/submit/{interviewId}")
-     public String getSubmitResultPage(@PathVariable Integer interviewId, Model model, Authentication authenticatedUser) {
-          EditInterviewDTO interview = interviewService.getInterviewDisplayableInfo(interviewId);
+     public String getSubmitResultPage(@PathVariable Integer interviewId, Model model,
+               Authentication authenticatedUser) {
+          EditInterviewDTO interview = interviewQueryManager.getInterviewDetails(interviewId);
           int statusId = masterService.findByCategoryAndValue(ConstantUtils.INTERVIEW_STATUS, interview.getStatus())
                     .get().getCategoryId();
           boolean isInvalidStatus = StatusValidator.isInvalidStatus(statusId,
@@ -181,7 +187,7 @@ public class InterviewController {
                throw new AccessDeniedException(err);
           }
           return ResponseEntity.ok()
-                    .body(interviewService.submitResult(interviewId, submitInterviewDTO, user, errors,
+                    .body(interviewResultManager.submitInterviewResult(interviewId, submitInterviewDTO, user, errors,
                               true));
      }
 
@@ -192,7 +198,7 @@ public class InterviewController {
      })
      @GetMapping("/edit/{interviewId}")
      public String getEditForm(@PathVariable Integer interviewId, Model model) {
-          EditInterviewDTO interview = interviewService.getInterviewDisplayableInfo(interviewId);
+          EditInterviewDTO interview = interviewQueryManager.getInterviewDetails(interviewId);
           int statusId = masterService.findByCategoryAndValue(ConstantUtils.INTERVIEW_STATUS, interview.getStatus())
                     .get().getCategoryId();
           boolean isInvalidStatus = StatusValidator.isInvalidStatus(statusId,
@@ -227,7 +233,7 @@ public class InterviewController {
                throw new AccessDeniedException(err);
           }
           return ResponseEntity.ok()
-                    .body(interviewService.editInterview(interviewId, interviewDTO, user, errors));
+                    .body(interviewScheduleManager.editSchedule(interviewId, interviewDTO, user, errors));
      }
 
      @Secured({
@@ -245,7 +251,7 @@ public class InterviewController {
                throw new AccessDeniedException(err);
           }
           try {
-               return ResponseEntity.ok().body(interviewService.cancelInterview(interviewId, authenticatedUser));
+               return ResponseEntity.ok().body(interviewScheduleManager.cancelSchedule(interviewId, user));
           } catch (Exception e) {
                return ResponseEntity.badRequest().body(e.getMessage());
           }
@@ -258,18 +264,19 @@ public class InterviewController {
      })
      @PostMapping("/send-reminder-now/{interviewId}")
      @ResponseBody
-     public ResponseEntity<?> postMethodName(@PathVariable Integer interviewId, Authentication authentication) {
+     public ResponseEntity<?> sendReminder(@PathVariable Integer interviewId, Authentication authentication) throws MessagingException {
           User user = (User) authentication.getPrincipal();
           if (user == null) {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
                throw new AccessDeniedException(err);
           }
-          try {
-               return ResponseEntity.ok().body(interviewService.sendReminderNow(interviewId, authentication));
-          } catch (Exception e) {
-               log.error(e.getMessage());
-               return ResponseEntity.badRequest().body(e.getMessage());
+          boolean success = interviewScheduleManager.sendReminderNow(interviewId, user);
+          if (success) {
+               return ResponseEntity.ok().body("Reminder emails sent successfully");
+          } else {
+               return ResponseEntity.badRequest().body("Failed to send reminder emails");
           }
+
      }
 
      @GetMapping("/me")

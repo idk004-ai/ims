@@ -89,7 +89,7 @@ $(document).ready(function() {
     function showSuccessPopup() {
         $('#successPopup').fadeIn();
         setTimeout(function() {
-            window.location.href = "https://jobnet.click/api/v1/user/get-all-user";
+            window.location.href = "/api/v1/user/get-all-user";
         }, 2000);
     }
 

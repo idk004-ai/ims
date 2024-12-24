@@ -23,6 +23,8 @@ import com.group1.interview_management.repositories.MasterRepository;
 import com.group1.interview_management.repositories.UserRepository;
 import com.group1.interview_management.services.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +35,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
      private final UserRepository userRepository;
@@ -129,9 +132,6 @@ public class UserServiceImpl implements UserService {
 
      @Override
      public UserDTO updateUser(UserDTO userDTO) {
-          if (userDTO.getStatus().equals(ConstantUtils.USER_INACTIVE)) {
-               interviewService.cancelInterviews(User.class);
-          }
           User user = userRepository.findById(userDTO.getId())
                     .orElseThrow(() -> new RuntimeException("User not found"));
           user.setFullname(userDTO.getFullname());
@@ -146,18 +146,21 @@ public class UserServiceImpl implements UserService {
           user.setDepartmentId(Integer.parseInt(userDTO.getDepartment()));
           user.setNote(userDTO.getNote());
           user = userRepository.save(user);
+          if (userDTO.getStatus().equals(ConstantUtils.USER_INACTIVE)) {
+               interviewService.cancelInterviews(User.class);
+          }
           return usermapper.toUserDTO(user);
      }
 
      @Override
      public void changeStatus(int userId, String status) {
           User user = userRepository.findById(userId).get();
-          if (status.equals(ConstantUtils.USER_INACTIVE)) {
-               interviewService.cancelInterviews(User.class);
-          }
           Master master = masterRepository.findByCategoryAndCategoryValue(ConstantUtils.USER_STATUS, status).get();
           user.setStatus(master.getCategoryId());
           userRepository.save(user);
+          if (status.equals(ConstantUtils.USER_INACTIVE)) {
+               interviewService.cancelInterviews(User.class);
+          }
      }
 
      @Override
@@ -166,7 +169,8 @@ public class UserServiceImpl implements UserService {
      }
 
      @Override
-     public List<User> getUserByIdAndRoleIds(List<Integer> userIds, BindingResult errors, String field, List<Integer> roleIds) {
+     public List<User> getUserByIdAndRoleIds(List<Integer> userIds, BindingResult errors, String field,
+               List<Integer> roleIds) {
           List<User> users = userRepository.findByIdsAndRoleIds(userIds, roleIds).orElse(null);
           if (users == null && errors != null && field != null && errors.getFieldError(field) == null) {
                String errorMessage = messageSource.getMessage("ME008", null, Locale.getDefault());
@@ -176,6 +180,6 @@ public class UserServiceImpl implements UserService {
      }
 
      public boolean phoneExists(String phoneNo) {
-         return userRepository.existsByPhone(phoneNo);
+          return userRepository.existsByPhone(phoneNo);
      }
 }

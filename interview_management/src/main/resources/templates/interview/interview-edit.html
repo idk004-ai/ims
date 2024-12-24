@@ -82,7 +82,6 @@
                               <option value="0" disabled selected>Select candidate name</option>
                               <th:block th:each="c : ${candidate_list}">
                                    <option th:value="${c.id}" th:text="${c.fullName + '(' + c.status + ')'}"
-                                        th:disabled="${c.status == 'Failed Interview' || c.status == 'Passed Interview'}"
                                         th:selected="${c.id == interview.getInterview_candidate()}">
                                         >
                               </th:block>
@@ -96,7 +95,7 @@
                                    class="text-danger">*</span></label>
                          <select name="interviewer_select" id="interviewer_select" onchange="removeError()" multiple>
                               <tr th:each="interviewer : ${interviewers}">
-                                   <option th:value="${interviewer.id}" th:text="${interviewer.fullname}"
+                                   <option th:value="${interviewer.id}" th:text="${interviewer.username}"
                                         th:selected="${#arrays.contains(interview.getInterviewer_tag(), interviewer.id)}">
                                    </option>
                               </tr>
@@ -148,7 +147,7 @@
                               th:data-selected-recruiter="${interview.getInterview_recruiter()}">
                               <option value="0" disabled>Select recruiter name</option>
                               <th:block th:each="r : ${recruiter_list}">
-                                   <option th:value="${r.id}" th:text="${r.fullname}"
+                                   <option th:value="${r.id}" th:text="${r.username}"
                                         th:selected="${r.id == interview.getInterview_recruiter()}">
                               </th:block>
                               <!-- render list of recruiter here -->
@@ -203,7 +202,7 @@
                          <button onclick="submitForm()" class="btn btn-primary me-2">
                               Submit Edit
                          </button>
-                         <button type="button" onclick="goPrev()" class="btn btn-secondary">
+                         <button type="button" onclick="redirectToMain()" class="btn btn-secondary">
                               Cancel
                          </button>
                     </div>

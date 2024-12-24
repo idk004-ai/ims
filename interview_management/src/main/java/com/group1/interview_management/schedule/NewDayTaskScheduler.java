@@ -16,10 +16,8 @@ public class NewDayTaskScheduler {
 
     JobService jobService;
 
-    // Chạy vào lúc 00:00 mỗi ngày
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?", zone = "Asia/Ho_Chi_Minh")
     public void executeAtMidnight() {
-        // Thực hiện các công việc cần làm vào thời điểm bắt đầu một ngày mới
         jobService.changeStatusJob();
     }
 

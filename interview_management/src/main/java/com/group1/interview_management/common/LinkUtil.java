@@ -17,7 +17,7 @@ public class LinkUtil {
     EmailPeriodRepository emailPeriodRepository;
 
      public static String generateLink(String uuid) {
-        String baseUrl = "https://jobnet.click/api/v1/user/reset-password/"; 
+        String baseUrl = "/api/v1/user/reset-password/"; 
         return baseUrl + uuid;
     }
 

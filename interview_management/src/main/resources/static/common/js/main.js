@@ -26,25 +26,24 @@
 
 });
 document.addEventListener('DOMContentLoaded', () => {
-    // Lấy URL hiện tại
+
     const currentPath = window.location.pathname;
 
-    // Liệt kê các id tương ứng với đường dẫn
     const menuMap = {
         '/api/v1/home': 'menu-home',
-        '/api/v1/candidates/list_candidates': 'menu-candidates',
-        '/api/v1/jobs/list-job': 'menu-jobs',
+        '/api/v1/candidates': 'menu-candidates',
+        '/api/v1/jobs': 'menu-jobs',
         '/api/v1/interview': 'menu-interview',
-        '/api/v1/offer/offer-list': 'menu-offer',
-        '/api/v1/user/get-all-user': 'menu-user',
+        '/api/v1/offer': 'menu-offer',
+        '/api/v1/user': 'menu-user',
     };
 
-    // Lấy id tương ứng từ map
-    const activeMenuId = menuMap[currentPath];
-
-    // Thêm class active nếu tìm thấy id
-    if (activeMenuId) {
-        const activeMenuItem = document.getElementById(activeMenuId);
-        activeMenuItem?.classList.add('active');
+    for (const [path, menuId] of Object.entries(menuMap)) {
+        if (currentPath.includes(path)) {
+            const activeMenuItem = document.getElementById(menuId);
+            activeMenuItem?.classList.add('active');
+            break;
+        }
     }
 });
+

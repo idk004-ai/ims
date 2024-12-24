@@ -49,7 +49,7 @@
           </div>
 
           <div class="content">
-               <p>Dear abc,</p>
+               <p>Dear <span th:text="${interviewerName}"></span>,</p>
 
                <p>
                     This email is to inform you that the following interview has
@@ -57,10 +57,10 @@
                </p>
 
                <ul>
-                    <li><strong>Candidate:</strong>BC</li>
-                    <li><strong>Position:</strong> abc</li>
-                    <li><strong>Scheduled Date:</strong>abc</li>
-                    <li><strong>Reason for Cancellation:</strong> abc</li>
+                    <li><strong>Candidate:</strong><span th:text="${candidateName}"></span></li>
+                    <li><strong>Position:</strong><span th:text="${jobTitle}"></span></li>
+                    <li><strong>Scheduled Date:</strong><span th:text="${scheduleDate}"></span></li>
+                    <li><strong>Reason for Cancellation:</strong><span th:text="${reason}"></span></li>
                </ul>
 
                <p class="important">

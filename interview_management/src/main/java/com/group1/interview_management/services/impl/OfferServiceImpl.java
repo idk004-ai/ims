@@ -3,6 +3,8 @@ package com.group1.interview_management.services.impl;
 import com.group1.interview_management.dto.Offer.OfferExportDTO;
 import com.group1.interview_management.entities.InterviewAssignment;
 import com.group1.interview_management.repositories.*;
+
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -191,7 +193,7 @@ public class OfferServiceImpl implements OfferService {
         interview.setOfferNote(offerCreateDTO.getOfferNote());
         interview.setInterviewId(interview.getInterviewId());
         interview.setStatusOfferId(
-                masterRepository.findByCategoryAndCategoryId(ConstantUtils.OFFER_STATUS, 1).get().getCategoryId());
+                masterRepository.findByCategoryAndCategoryId(ConstantUtils.OFFER_STATUS, ConstantUtils.OFFER_STATUS_WAITING_FOR_APPROVAL).get().getCategoryId());
         interviewRepository.save(interview);
     }
 
@@ -199,8 +201,8 @@ public class OfferServiceImpl implements OfferService {
     public void approveOffer(Integer id) {
         Interview offer = interviewRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Offer not found"));
-        offer.setStatusOfferId(2);
-        offer.getCandidate().setStatusId(7);
+        offer.setStatusOfferId(ConstantUtils.OFFER_STATUS_APPROVED_OFFER);
+        offer.getCandidate().setStatusId(ConstantUtils.CANDIDATE_APPROVED_OFFER);
         offerRepository.save(offer);
     }
 
@@ -208,8 +210,8 @@ public class OfferServiceImpl implements OfferService {
     public void rejectOffer(Integer id) {
         Interview offer = interviewRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Offer not found"));
-        offer.setStatusOfferId(3);
-        offer.getCandidate().setStatusId(8);
+        offer.setStatusOfferId(ConstantUtils.OFFER_STATUS_REJECTED_OFFER);
+        offer.getCandidate().setStatusId(ConstantUtils.CANDIDATE_REJECTED_OFFER);
         offerRepository.save(offer);
     }
 
@@ -217,8 +219,8 @@ public class OfferServiceImpl implements OfferService {
     public void sentOffer(Integer id) {
         Interview offer = interviewRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Offer not found"));
-        offer.setStatusOfferId(4);
-        offer.getCandidate().setStatusId(3);
+        offer.setStatusOfferId(ConstantUtils.OFFER_STATUS_WAITING_FOR_RESPONSE);
+        offer.getCandidate().setStatusId(ConstantUtils.CANDIDATE_WAITING_FOR_INTERVIEW);
         offerRepository.save(offer);
     }
 
@@ -226,8 +228,8 @@ public class OfferServiceImpl implements OfferService {
     public void acceptOffer(Integer id) {
         Interview offer = interviewRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Offer not found"));
-        offer.setStatusOfferId(5);
-        offer.getCandidate().setStatusId(9);
+        offer.setStatusOfferId(ConstantUtils.OFFER_STATUS_ACCEPTED_OFFER);
+        offer.getCandidate().setStatusId(ConstantUtils.CANDIDATE_ACCEPTED_OFFER);
         offerRepository.save(offer);
     }
 
@@ -235,16 +237,16 @@ public class OfferServiceImpl implements OfferService {
     public void declinedOffer(Integer id) {
         Interview offer = interviewRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Offer not found"));
-        offer.setStatusOfferId(6);
-        offer.getCandidate().setStatusId(10);
+        offer.setStatusOfferId(ConstantUtils.OFFER_STATUS_DECLINED_OFFER);
+        offer.getCandidate().setStatusId(ConstantUtils.CANDIDATE_DECLINED_OFFER);
         offerRepository.save(offer);
     }
 
     public void cancelOffer(Integer id) {
         Interview offer = interviewRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Offer not found"));
-        offer.setStatusOfferId(7);
-        offer.getCandidate().setStatusId(11);
+        offer.setStatusOfferId(ConstantUtils.OFFER_STATUS_CANCELLED);
+        offer.getCandidate().setStatusId(ConstantUtils.CANDIDATE_CANCELLED_OFFER);
         offerRepository.save(offer);
     }
 

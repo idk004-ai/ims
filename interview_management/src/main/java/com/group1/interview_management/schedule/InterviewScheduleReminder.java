@@ -17,7 +17,7 @@ import com.group1.interview_management.entities.Interview;
 import com.group1.interview_management.entities.InterviewAssignment;
 import com.group1.interview_management.entities.User;
 import com.group1.interview_management.repositories.InterviewRepository;
-import com.group1.interview_management.services.InterviewService;
+import com.group1.interview_management.services.InterviewQueryManager;
 import com.group1.interview_management.services.impl.EmailService;
 
 import jakarta.mail.MessagingException;
@@ -30,13 +30,13 @@ import lombok.extern.slf4j.Slf4j;
 public class InterviewScheduleReminder {
 
      private final EmailService emailService;
-     private final InterviewService interviewService;
+     private final InterviewQueryManager interviewQueryManager;
      private final InterviewRepository interviewRepository;
      private static final int REMINDER_DAYS_BEFORE = 3;
      private static final int MAX_RETRIES = 3;
 
      private List<Interview> getUpcomingInterveiws(LocalDate startDate, LocalDate endDate) {
-          return interviewService.getAllInterview(startDate, endDate);
+          return interviewQueryManager.getInterviewsByDateRange(startDate, endDate);
      }
 
      @Scheduled(cron = "0 0 8 * * ?")
@@ -133,7 +133,7 @@ public class InterviewScheduleReminder {
                     true);
      }
 
-     @Scheduled(cron = "0 0 14 * * ?")
+     @Scheduled(cron = "0 45 15 * * ?")
      public void cancelOverdueSchedules() throws MessagingException {
           LocalDate currentDate = LocalDate.now();
 

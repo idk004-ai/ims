@@ -1,5 +1,6 @@
 package com.group1.interview_management.dto.JobDTO.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -20,7 +21,7 @@ public class JobCreationRequest {
 
     @NotNull(message = "{ME002}")
     @NotBlank(message = "{ME002}")
-    @Size(min = 1, max = 100, message = "{ME049}")
+    @Size(max = 100, message = "{ME049}")
     String title;
 
     @NotNull(message = "{ME002}")
@@ -34,9 +35,11 @@ public class JobCreationRequest {
     Double salaryTo;
 
     @NotNull(message = "{ME002}")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate startDate;
 
     @NotNull(message = "{ME002}")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate endDate;
 
     @NotNull(message = "{ME002}")
@@ -51,9 +54,9 @@ public class JobCreationRequest {
     @NotEmpty(message = "{ME002}")
     List<String> skills;
 
-    @Max(value = 500, message = "ME049.1")
+    @Size(max = 500, message = "{ME049.1}")
     String workingAddress;
-    @Max(value = 500, message = "ME049.1")
+    @Size(max = 500, message = "{ME049.1}")
     String description;
     String statusJob;
 }
