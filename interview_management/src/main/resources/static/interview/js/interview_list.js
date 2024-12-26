@@ -10,6 +10,17 @@ async function updateInterviewTable(interviews) {
     }
     var handleTitle = (role === 4) ? 'Submit' : 'Edit';
 
+    if (interviews.length === 0) {
+        $('#InterviewTableBody').append(`
+            <tr>
+                <td colspan="7" style="text-align: center; color: gray;">
+                    No item matches with your search data. Please try again.
+                </td>
+            </tr>
+        `);
+        return;
+    }
+
     interviews.forEach(interview => {
         const row = `
                <tr id=${interview.interviewId} class="interview-row" data-interview-id="${interview.interviewId}">

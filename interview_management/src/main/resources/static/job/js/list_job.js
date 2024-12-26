@@ -43,7 +43,7 @@ function updateTable(jobs) {
         $('#jobTableBody').append(`
             <tr>
                 <td colspan="7" style="text-align: center; color: gray;">
-                    No candidates found.
+                    No item matches with your search data. Please try again.
                 </td>
             </tr>
         `);

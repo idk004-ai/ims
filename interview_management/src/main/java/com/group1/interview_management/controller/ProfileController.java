@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.group1.interview_management.common.EmailUtils;
+import com.group1.interview_management.common.ConstantUtils;
 import com.group1.interview_management.dto.UserDTO;
 import com.group1.interview_management.entities.User;
+import com.group1.interview_management.services.MasterService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProfileController {
 
+     private final MasterService masterService;
 
      @GetMapping
      @ResponseBody
@@ -26,11 +28,11 @@ public class ProfileController {
                return ResponseEntity.badRequest().build();
           } else {
                User user = (User) authenticatedUser.getPrincipal();
-               
+               String department = masterService.findByCategoryAndCategoryId(ConstantUtils.DEPARTMENT, user.getDepartmentId()).getCategoryValue();
                return ResponseEntity.ok().body(UserDTO.builder()
                          .id(user.getId())
                          .fullname(user.getFullname())
-                         .username(EmailUtils.extractMail(user.getUsername()))
+                         .username(user.getUsername_())
                          .phoneNo(user.getPhone())
                          .role(String.valueOf(user.getRoleId()))
                          .status(String.valueOf(user.getStatus()))
@@ -38,7 +40,7 @@ public class ProfileController {
                          .gender(String.valueOf(user.getGender()))
                          .address(user.getAddress())
                          .dob(user.getDob())
-                         .department(String.valueOf(user.getDepartmentId()))
+                         .department(department)
                          .note(user.getNote())
                          .build());
           }

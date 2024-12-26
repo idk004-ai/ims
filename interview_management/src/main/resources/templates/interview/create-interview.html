@@ -72,7 +72,7 @@
                     <select id="interview_candidate" class="form-select">
                         <option value="0" disabled selected>Select candidate name</option>
                         <th:block th:each="c : ${candidate_list}">
-                            <option th:value="${c.id}" th:text="${c.fullName + '(' + c.status + ')'}">
+                            <option th:value="${c.id}" th:text="${c.fullName}">
                         </th:block>
                         <!-- render list of candidate here -->
                     </select>

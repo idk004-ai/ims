@@ -16,6 +16,12 @@
      <script th:src="@{/static/common/js/drop_list_multi_choice.js}"></script>
      <script th:src="@{/static/common/js/display_errors.js}"></script>
      <script th:src="@{/static/interview/js/common_interview.js}"></script>
+     <style>
+          button:disabled {
+               opacity: 0.6;
+               cursor: not-allowed;
+          }
+     </style>
 </head>
 
 <body class="app sidebar-mini rtl">
@@ -135,9 +141,15 @@
                     </div>
                </div>
 
+               <div class="alert alert-warning d-flex align-items-center" role="alert" id="alert_warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <div>
+                         You can only submit the result after the interview schedule date.
+                    </div>
+               </div>
 
                <div class="d-flex justify-content-center mt-4">
-                    <button class="btn btn-primary me-2" onclick="submitResult()">
+                    <button class="btn btn-primary me-2" onclick="submitResult()" id="submit_result_button">
                          Submit
                     </button>
                     <button type="button" onclick="redirectToMain()" class="btn btn-secondary">
@@ -168,9 +180,25 @@
                     </div>
                </div>
      </main>
+     <script th:inline="javascript">
+          document.addEventListener('DOMContentLoaded', function () {
+               // Get the interview schedule date from Thymeleaf
+               const interviewSchedule = /*[[${interview.interview_schedule}]]*/ '';
+               const start = /*[[${interview.startTime}]]*/ '';
+               const interviewDate = new Date(interviewSchedule);
+               interviewDate.setHours(start.split(':')[0], start.split(':')[1], 0, 0);
+               const currentDate = new Date();
+               const submitButton = document.getElementById('submit_result_button');
+               
+               // Disable button if current date is before interview date
+               if (currentDate < interviewDate) {
+                    submitButton.disabled = true;
+               } else {
+                    submitButton.disabled = false;
+               }
+          });
+          </script>
      <script>
-          new Drop_list_multi_choice("interviewer_select");
-
           function submitResult() {
                const interviewResult = document.getElementById('interview_result').value;
                const note = document.getElementById('note').value;

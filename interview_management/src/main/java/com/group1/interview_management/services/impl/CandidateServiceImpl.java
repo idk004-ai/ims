@@ -15,6 +15,7 @@ import com.group1.interview_management.services.UserService;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -101,6 +102,9 @@ public class CandidateServiceImpl implements CandidateService {
                 id, ConstantUtils.GENDER, ConstantUtils.POSITION,
                 ConstantUtils.CANDIDATE_STATUS, ConstantUtils.HIGHEST_LEVEL);
 
+        if (candidateDetailDTO == null) {
+            throw new NoSuchElementException("Candidate not found");
+        }
         // Get skills
         candidateDetailDTO
                 .setSkills(masterService.getListCategoryValue(candidateDetailDTO.getSkills(), ConstantUtils.SKILLS));

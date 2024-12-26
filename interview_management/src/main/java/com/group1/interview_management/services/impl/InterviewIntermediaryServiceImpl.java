@@ -79,7 +79,7 @@ public class InterviewIntermediaryServiceImpl implements InterviewIntermediarySe
 
           for (Interview i : interviews) {
                Job job = i.getJob();
-               if (job.getStatusJobId() == ConstantUtils.JOB_CLOSE) {
+               if (job.getStatusJobId() == ConstantUtils.JOB_CLOSE || job.getDeleteFlag()) {
                     i.setStatusInterviewId(ConstantUtils.INTERVIEW_STATUS_CANCELLED);
                     interviewRepository.save(i);
                     Candidate candidate = i.getCandidate();

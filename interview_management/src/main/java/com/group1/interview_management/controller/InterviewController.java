@@ -1,5 +1,7 @@
 package com.group1.interview_management.controller;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.List;
@@ -186,9 +188,19 @@ public class InterviewController {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());
                throw new AccessDeniedException(err);
           }
-          return ResponseEntity.ok()
-                    .body(interviewResultManager.submitInterviewResult(interviewId, submitInterviewDTO, user, errors,
-                              true));
+          EditInterviewDTO interview = interviewQueryManager.getInterviewDetails(interviewId);
+          if ((interview.getInterview_schedule().isEqual(LocalDate.now())
+                    && interview.getStartTime().isBefore(LocalTime.now()))
+                    || interview.getInterview_schedule().isBefore(LocalDate.now())) {
+               return ResponseEntity.ok()
+                         .body(interviewResultManager.submitInterviewResult(interviewId, submitInterviewDTO, user,
+                                   errors,
+                                   true));
+          } else {
+               String error = messageSource.getMessage("ME022.9", null, Locale.getDefault());
+               return ResponseEntity.badRequest().body(error);
+          }
+
      }
 
      @Secured({
@@ -264,7 +276,8 @@ public class InterviewController {
      })
      @PostMapping("/send-reminder-now/{interviewId}")
      @ResponseBody
-     public ResponseEntity<?> sendReminder(@PathVariable Integer interviewId, Authentication authentication) throws MessagingException {
+     public ResponseEntity<?> sendReminder(@PathVariable Integer interviewId, Authentication authentication)
+               throws MessagingException {
           User user = (User) authentication.getPrincipal();
           if (user == null) {
                String err = messageSource.getMessage("ME002.1", null, Locale.getDefault());

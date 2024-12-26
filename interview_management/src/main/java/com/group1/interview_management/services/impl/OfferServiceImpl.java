@@ -4,7 +4,6 @@ import com.group1.interview_management.dto.Offer.OfferExportDTO;
 import com.group1.interview_management.entities.InterviewAssignment;
 import com.group1.interview_management.repositories.*;
 
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -127,7 +126,7 @@ public class OfferServiceImpl implements OfferService {
     public OfferDetailDTO getOfferById(Integer id) {
         Interview interview = interviewRepository.findById(id).orElse(null);
         if (interview == null) {
-            return null;
+            throw new NoSuchElementException("Interview not found");
         }
         OfferDetailDTO offerDetailDTO = new OfferDetailDTO();
         offerDetailDTO.setInterviewId(interview.getInterviewId());

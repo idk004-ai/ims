@@ -101,7 +101,7 @@ public class InterviewScheduleReminder {
           props.put("daysUntilInterview", daysUntilInterview);
           props.put("location", interview.getLocation());
           props.put("meetingLink", interview.getMeetingId());
-          props.put("interviewURL", "/api/v1/interview/view/" + interview.getInterviewId());
+          props.put("interviewURL", "http://localhost:9090/api/v1/interview/view/" + interview.getInterviewId());
           return props;
      }
 
@@ -133,7 +133,7 @@ public class InterviewScheduleReminder {
                     true);
      }
 
-     @Scheduled(cron = "0 45 15 * * ?")
+     @Scheduled(cron = "0 0 0 * * ?")
      public void cancelOverdueSchedules() throws MessagingException {
           LocalDate currentDate = LocalDate.now();
 
